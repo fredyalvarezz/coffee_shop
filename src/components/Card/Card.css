@@ -1,0 +1,77 @@
+.card {
+  background-color: white;
+  border-radius: 16px;
+  padding: 12px;
+  width: 180px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+/* Hover */
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Imagen */
+.card__img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+/* Título */
+.card__title {
+  font-size: 14px;
+  margin: 10px 0 5px;
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+/* Precio */
+.card__price {
+  font-size: 14px;
+  color: var(--color-secondary);
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+/* Botón */
+.card__button {
+  width: 100%;
+  padding: 8px;
+  border-radius: 10px;
+  border: none;
+  background-color: var(--color-primary);
+  color: white;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Hover botón */
+.card__button:hover {
+  opacity: 0.85;
+}
+
+.card__button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  color: #666;
+}
+
+/* Badge opcional */
+.card__badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: red;
+  color: white;
+  font-size: 10px;
+  padding: 4px 8px;
+  border-radius: 8px;
+}

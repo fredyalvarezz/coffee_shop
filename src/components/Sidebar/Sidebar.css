@@ -1,0 +1,60 @@
+.sidebar {
+  width: 240px;
+  height: 93vh;
+  background-color: white;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 20px;
+}
+
+/* Logo */
+.sidebar__logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.sidebar__logo-img {
+  width: 75px;
+  height: 75px;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+.sidebar__logo-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+/* Nav */
+.sidebar__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Links */
+.sidebar__link {
+  text-decoration: none;
+  color: var(--color-text);
+  font-size: 14px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+/* Hover */
+.sidebar__link:hover {
+  background-color: var(--color-bg);
+}
+
+/* Activo */
+.sidebar__link.active {
+  background-color: var(--color-primary);
+  color: white;
+}

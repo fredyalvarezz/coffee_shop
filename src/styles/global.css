@@ -1,0 +1,15 @@
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+.app {
+  display: flex;
+}
+.content {
+  flex: 1;
+  padding: 30px;
+  background-color: var(--color-bg);
+}
