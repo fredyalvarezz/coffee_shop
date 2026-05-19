@@ -1,9 +1,9 @@
 .card {
-  background-color: white;
+  background-color: var(--color-surface);
   border-radius: 16px;
   padding: 12px;
   width: 180px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-soft);
   transition: all 0.3s ease;
   cursor: pointer;
   position: relative;
@@ -12,7 +12,7 @@
 /* Hover */
 .card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-hover);
 }
 
 /* Imagen */
@@ -34,7 +34,7 @@
 /* Precio */
 .card__price {
   font-size: 14px;
-  color: var(--color-secondary);
+  color: var(--color-text-soft);
   font-weight: bold;
   margin-bottom: 10px;
 }
@@ -43,12 +43,13 @@
 .card__button {
   width: 100%;
   padding: 8px;
-  border-radius: 10px;
+  border-radius: 14px;
   border: none;
   background-color: var(--color-primary);
   color: white;
   font-size: 13px;
   font-weight: 500;
+  height: 38px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -56,12 +57,13 @@
 /* Hover botón */
 .card__button:hover {
   opacity: 0.85;
+  transform: translateY(-1px);
 }
 
 .card__button:disabled {
-  background-color: #ccc;
+  background-color: var(--color-border);
   cursor: not-allowed;
-  color: #666;
+  color: var(--color-text-soft);
 }
 
 /* Badge opcional */
@@ -69,7 +71,7 @@
   position: absolute;
   top: 10px;
   left: 10px;
-  background-color: red;
+  background-color: #B85C5C;
   color: white;
   font-size: 10px;
   padding: 4px 8px;

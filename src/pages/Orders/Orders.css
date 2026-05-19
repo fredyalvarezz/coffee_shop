@@ -1,0 +1,95 @@
+.orders {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 25px;
+}
+
+.orders__items,
+.orders__summary {
+  background: var(--color-surface);
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: var(--shadow-soft);
+}
+
+.orders__card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  padding: 16px 0;
+
+  border-bottom: 1px solid var(--color-border);
+}
+
+.orders__image {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 16px;
+  background: var(--color-surface-soft);
+}
+
+.orders__info {
+  flex: 1;
+}
+
+.orders__info h3 {
+  margin: 0;
+  color: var(--color-text);
+}
+
+.orders__info p,
+.orders__info small {
+  color: var(--color-text-soft);
+  display: block;
+  margin-top: 3px;
+}
+
+.orders__qty {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.orders__qty button {
+  width: 32px;
+  height: 32px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: var(--color-surface-soft);
+
+  cursor: pointer;
+}
+
+.orders__summary {
+  height: fit-content;
+}
+
+.orders__row {
+  display: flex;
+  justify-content: space-between;
+  margin: 18px 0;
+}
+
+.orders__total {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.orders__pay {
+  width: 100%;
+  padding: 16px;
+
+  border: none;
+  border-radius: 18px;
+
+  background: var(--color-primary);
+  color: white;
+
+  font-weight: bold;
+
+  cursor: pointer;
+}

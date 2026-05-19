@@ -5,7 +5,9 @@ import { useCart } from "../../context/CartContext";
 
 export default function Sidebar({ onOpenCart }) {
     const location = useLocation();
-    const { cart } = useCart();
+    const { cart } =  useCart();
+
+    const totalItems = cart.reduce((acc, item) => acc + item.qty, 0);
 
     return (
         <aside className="sidebar">
@@ -17,10 +19,7 @@ export default function Sidebar({ onOpenCart }) {
 
             {/* Navegación */}
             <nav className="sidebar__nav">
-                <button className="sidebar__link"
-                    onClick={onOpenCart}>
-                    🛒 {cart.length}
-                </button>
+                
                 <Link
                     to="/"
                     className={`sidebar__link ${location.pathname === "/" ? "active" : ""
@@ -43,6 +42,10 @@ export default function Sidebar({ onOpenCart }) {
                         }`}
                 >
                     Pedidos
+
+                    {totalItems >0 && (
+                        <span className="sidebar__badge">{totalItems}</span>
+                    )}
                 </Link>
 
                 <Link

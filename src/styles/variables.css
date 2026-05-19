@@ -1,8 +1,19 @@
 :root {
   --color-bg: #F2EEE9;
-  --color-surface: #BFBFBF;
+
+  --color-surface: #FFFFFF;
+  --color-surface-soft: #EAE6E1;
+
   --color-primary: #5FA3A3;
-  --color-primary-hover: #4a8f8f;
+  --color-primary-hover: #4A8F8F;
+
   --color-secondary: #C2A98A;
+
   --color-text: #2B2B2B;
+  --color-text-soft: #7A7A7A;
+
+  --color-border: #D8D2CB;
+
+  --shadow-soft: 0 4px 12px rgba(0,0,0,0.05);
+  --shadow-hover: 0 8px 20px rgba(0,0,0,0.08);
 }

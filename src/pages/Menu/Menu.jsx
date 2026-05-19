@@ -1,14 +1,16 @@
 import "./Menu.css";
 import { useSearchParams } from "react-router-dom";
-import products from "../../data/products";
-import Card from "../../components/Card/Card";
-import { useState } from "react";
-import ProductModal from "../../components/ProductModal/ProductModal";
 
+import products from "../../data/products";
+
+import Card from "../../components/Card/Card";
 
 export default function Menu() {
+
   const [searchParams, setSearchParams] = useSearchParams();
-  const activeCat = searchParams.get("cat") || "calientes";
+
+  const activeCat =
+    searchParams.get("cat") || "calientes";
 
   const setCategory = (cat) => {
     setSearchParams({ cat });
@@ -18,23 +20,15 @@ export default function Menu() {
     (product) => product.category === activeCat
   );
 
-  const [selectedProduct, setSelectedProduct] = useState(null);
-
-  {/* Funciones para abrir el modal */ }
-  const openModal = (product) => {
-    setSelectedProduct(product);
-  };
-
-  const closeModal = () => {
-    setSelectedProduct(null);
-  };
-
   return (
+
     <div className="menu">
+
       <h2>Nuestro Menú</h2>
 
-      {/*Tabs */}
+      {/* Tabs */}
       <div className="menu__tabs">
+
         <button
           className={activeCat === "calientes" ? "active" : ""}
           onClick={() => setCategory("calientes")}
@@ -46,14 +40,15 @@ export default function Menu() {
           className={activeCat === "frias" ? "active" : ""}
           onClick={() => setCategory("frias")}
         >
-          Frias
+          Frías
         </button>
 
         <button
           className={activeCat === "frappes" ? "active" : ""}
           onClick={() => setCategory("frappes")}
         >
-          Frappes</button>
+          Frappes
+        </button>
 
         <button
           className={activeCat === "temporada" ? "active" : ""}
@@ -61,29 +56,27 @@ export default function Menu() {
         >
           Temporada
         </button>
+
       </div>
+
       {/* Cards */}
       <div className="menu__grid">
+
         {filteredProducts.map((product) => (
+
           <Card
             key={product.id}
+            id={product.id}
             title={product.title}
             basePrice={product.basePrice}
             image={product.image}
             stock={product.stock}
-            onAdd={() => openModal(product)}
           />
+
         ))}
 
-        {selectedProduct && (
-          <ProductModal
-            product={selectedProduct}
-            onClose={closeModal}
-          />
-        )}
       </div>
 
-
     </div>
-  )
+  );
 }
