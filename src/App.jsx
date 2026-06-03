@@ -8,23 +8,29 @@ import Orders from "./pages/Orders/Orders";
 
 function App() {
 
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
     <BrowserRouter>
+
       <div className="app">
 
-        <Sidebar />
+        <Sidebar
+          isOpen={sidebarOpen}
+          setIsOpen={setSidebarOpen}
+        />
 
         <main className="content">
           <Routes>
 
-            <Route 
-            path="/" 
-            element={<Home />} 
+            <Route
+              path="/"
+              element={<Home />}
             />
 
-            <Route 
-            path="/menu" 
-            element={<Menu />} 
+            <Route
+              path="/menu"
+              element={<Menu />}
             />
 
             <Route
@@ -38,7 +44,7 @@ function App() {
             />
 
           </Routes>
-          
+
         </main>
 
       </div>

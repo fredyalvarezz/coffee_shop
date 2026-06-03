@@ -6,9 +6,9 @@
     justify-content: center;
     align-items: center;
 
-    background: rgba(0,0,0,0.15);
+    background: rgba(0, 0, 0, 0.15);
 
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(2px);
     -webkit-backdrop-filter: blur(8px);
 
     z-index: 9999;
@@ -30,6 +30,7 @@
     text-align: center;
 
     animation: toastPop 0.25s ease;
+    transition: all 0.2s ease;
 }
 
 /* SUCCESS */
@@ -39,10 +40,10 @@
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
 
-    border: 1px solid rgba(255,255,255,0.15);
+    border: 1px solid rgba(255, 255, 255, 0.15);
 
     box-shadow:
-        0 10px 40px rgba(0,0,0,0.2);
+        0 10px 40px rgba(0, 0, 0, 0.2);
 }
 
 /* ERROR */
@@ -52,7 +53,14 @@
 
 /* WARNING */
 .toast--warning {
-    background: rgba(240, 173, 78, 0.75);
+    background: rgba(194, 169, 138, 0.78);
+
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+
+    border: 1px solid rgba(255, 255, 255, 0.15);
+
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
 }
 
 @keyframes toastPop {

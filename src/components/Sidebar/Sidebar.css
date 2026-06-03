@@ -1,12 +1,14 @@
 .sidebar {
   width: 240px;
-  height: 93vh;
+  min-height: 100vh;
   background-color: var(--color-surface-soft);
   padding: 20px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
   gap: 20px;
+  box-shadow: 8px 0 30px rgba(0,0,0,0.08);
+  transition: left 0.3s ease,
+    opacity 0.3s ease;
 }
 
 /* Logo */
@@ -51,7 +53,7 @@
 
 /* Hover */
 .sidebar__link:hover {
-  background-color: var(--color-bg);
+  background-color: var(--color-primary-hover);
 }
 
 /* Activo */
@@ -80,4 +82,147 @@
 
   font-size: 11px;
   font-weight: bold;
+  animation: badgePop 0.25s ease;
+}
+
+/* Overlay */
+
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+
+  background: rgba(0, 0, 0, 0.3);
+
+  backdrop-filter: blur(4px);
+
+  z-index: 999;
+  animation: overlayFade 0.25s ease;
+}
+
+
+/* Toggle button */
+
+.sidebar__toggle {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+
+  width: 52px;
+  height: 52px;
+
+  border: none;
+  border-radius: 18px;
+
+  background: var(--color-surface);
+
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+
+  cursor: pointer;
+
+  transition: all 0.3s ease;
+
+  box-shadow: var(--shadow-soft);
+  z-index: 1200;
+
+  backdrop-filter: blur(10px);
+}
+
+.sidebar__toggle.active {
+  left: 220px;
+}
+
+/* Líneas */
+
+.sidebar__toggle span {
+  width: 22px;
+  height: 2px;
+
+  background: var(--color-text);
+
+  border-radius: 10px;
+
+  transition: all 0.3s ease;
+  transform-origin: center;
+}
+
+/* Hover */
+
+.sidebar__toggle:hover {
+  transform: scale(1.04);
+}
+
+/* Animación a X */
+
+.sidebar__toggle.active span:nth-child(1) {
+  transform: translateY(8px) rotate(45deg);
+}
+
+.sidebar__toggle.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.sidebar__toggle.active span:nth-child(3) {
+  transform: translateY(-8px) rotate(-45deg);
+}
+
+/* MOBILE */
+
+@media (max-width: 768px) {
+
+  .sidebar {
+
+    position: fixed;
+
+    top: 0;
+    left: -280px;
+
+    width: 240px;
+    height: 100vh;
+
+    z-index: 1000;
+
+    transition: left 0.3s ease;
+    opacity: 0;
+    padding-top: 90px;
+  }
+  .sidebar__toggle {
+  display: flex;
+}
+
+  .sidebar--open {
+    left: 0;
+    opacity: 1;
+  }
+
+
+}
+
+/* Animación contador de pedido*/
+
+@keyframes badgePop {
+  0% {
+    transform: translateY(-50%) scale(0.7);
+  }
+
+  70% {
+    transform: translateY(-50%) scale(1.15);
+  }
+
+  100% {
+    transform: translateY(-50%) scale(1);
+  }
+}
+
+@keyframes overlayFade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
