@@ -1,9 +1,12 @@
 import "./Home.css";
 import { useNavigate } from "react-router-dom";
-
+import { useAuth } from "../../context/AuthContext";
 export default function Home() {
 
  const navigate = useNavigate();
+ const { user } = useAuth();
+
+ console.log(user);
 
   return (
     <div className="home">
@@ -14,11 +17,6 @@ export default function Home() {
           <p>¿Qué te gustaría tomar hoy?</p>
         </div>
 
-        <input
-          type="text"
-          placeholder="Buscar bebida..."
-          className="home__header-search"
-        />
       </header>
 
       {/* Banner */}

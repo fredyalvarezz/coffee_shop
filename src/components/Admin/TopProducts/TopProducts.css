@@ -1,0 +1,38 @@
+.top-products{
+
+    background:var(--color-surface);
+
+    border-radius:20px;
+
+    padding:25px;
+
+    box-shadow:var(--shadow-soft);
+
+}
+
+.top-products h2{
+
+    margin-top:0;
+    margin-bottom:20px;
+
+    color:var(--color-text);
+
+}
+
+.top-products__item{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    padding:12px 0;
+
+    border-bottom:1px solid var(--color-border);
+
+}
+
+.top-products__item:last-child{
+
+    border-bottom:none;
+
+}

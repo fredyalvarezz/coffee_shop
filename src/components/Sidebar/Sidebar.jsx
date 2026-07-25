@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import logo from "../../assets/logo.png";
 import { useCart } from "../../context/CartContext";
 
+
 export default function Sidebar({
     isOpen,
     setIsOpen,
@@ -12,19 +13,27 @@ export default function Sidebar({
 
     const totalItems = cart.reduce((acc, item) => acc + item.qty, 0);
 
+
+    if (
+        location.pathname === "/login" ||
+        location.pathname === "/register"
+    ) {
+        return null;
+    }
+
     return (
         <>
-        
-                    <button
-                        className={`sidebar__toggle ${isOpen ? "active" : ""}`}
-                        onClick={() => setIsOpen(!isOpen)}
-                    >
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </button>
 
-    
+            <button
+                className={`sidebar__toggle ${isOpen ? "active" : ""}`}
+                onClick={() => setIsOpen(!isOpen)}
+            >
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+
 
             {isOpen && (
                 <div
@@ -84,13 +93,23 @@ export default function Sidebar({
                     >
                         Cartera
                     </Link>
+            
                     <Link
-                        to="/perfil"
+                        to="/login"
                         onClick={() => setIsOpen(false)}
-                        className={`sidebar__link ${location.pathname === "/perfil" ? "active" : ""
+                        className={`sidebar__link ${location.pathname === "/login" ? "active" : ""
                             }`}
                     >
-                        Perfil</Link>
+                        Iniciar Sesion
+                    </Link>
+                    <Link
+                        to="/register"
+                        onClick={() => setIsOpen(false)}
+                        className={`sidebar__link ${location.pathname === "/register" ? "active" : ""
+                            }`}
+                    >
+                        Registrarse
+                    </Link>
                 </nav>
             </aside>
         </>

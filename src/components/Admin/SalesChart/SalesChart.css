@@ -1,0 +1,19 @@
+.sales-chart{
+
+    background:var(--color-surface);
+
+    border-radius:20px;
+
+    padding:25px;
+
+    box-shadow:var(--shadow-soft);
+
+}
+
+.sales-chart__title{
+
+    margin:0 0 20px;
+
+    color:var(--color-text);
+
+}

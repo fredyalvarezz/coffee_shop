@@ -1,0 +1,117 @@
+.orders-table {
+
+    margin-top: 40px;
+
+    background: var(--color-surface);
+
+    border-radius: 20px;
+
+    box-shadow: var(--shadow-soft);
+
+    overflow: hidden;
+
+}
+
+.orders-table__header{
+
+    padding:20px 25px;
+
+    border-bottom:1px solid var(--color-border);
+
+}
+
+.orders-table__header h2{
+
+    margin:0;
+
+    color:var(--color-text);
+
+}
+
+.orders-table__table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+}
+
+.orders-table th{
+
+    background:var(--color-surface-soft);
+
+    padding:16px;
+
+    text-align:left;
+
+    color:var(--color-text);
+
+}
+
+.orders-table td{
+
+    padding:18px 16px;
+
+    border-bottom:1px solid var(--color-border);
+
+}
+
+.orders-table tbody tr:hover{
+
+    background:#fafafa;
+
+}
+
+.orders-table__status{
+
+    padding:6px 14px;
+
+    border-radius:30px;
+
+    font-size:13px;
+
+    font-weight:600;
+
+    color:white;
+
+}
+
+.orders-table__status--preparando{
+
+    background:#f0ad4e;
+
+}
+
+.orders-table__status--entregado{
+
+    background:#5cb85c;
+
+}
+
+.orders-table__status--cancelado{
+
+    background:#d9534f;
+
+}
+
+.orders-table__status--pendiente{
+
+    background:#5bc0de;
+
+}
+
+@media(max-width:768px){
+
+.orders-table{
+
+overflow-x:auto;
+
+}
+
+.orders-table__table{
+
+min-width:650px;
+
+}
+
+}

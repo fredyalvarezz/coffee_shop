@@ -27,24 +27,31 @@ export default function ProductDetail() {
 
     const [note, setNote] = useState("");
 
-    const [extras, setExtras] = useState({
-        shot: false,
-        foam: false,
-        splenda: false,
-        mascabado: false,
-        stevia: false,
-    });
+    const [extras, setExtras] = useState({}); 
+
+    const [coffee, setCoffee] = useState(
+        product.options?.coffee?.[0] || null
+    );
 
     const [showToast, setShowToast] = useState(false);
 
     let finalPrice = product.basePrice;
 
-    if (size === "grande") finalPrice += 10;
     if (size === "mediano") finalPrice += 5;
-    if (extras.shot) finalPrice += 15;
+    if (size === "grande") finalPrice += 10;
 
-    if (style === "frappe") finalPrice += 10;
     if (style === "frio") finalPrice += 5;
+    if (style === "frappe") finalPrice += 10;
+
+    product.options?.extras?.forEach((extra) => {
+
+        if (extras[extra.id]) {
+
+            finalPrice += extra.price;
+
+        }
+
+    });
 
     const toggleExtra = (name) => {
         setExtras({
@@ -70,10 +77,7 @@ export default function ProductDetail() {
                 <div className="product-detail__info">
                     <h1>{product.title}</h1>
 
-                    <p>
-                        Café premium preparado al momento
-                        con ingredientes frescos.
-                    </p>
+                    <p>{product.description}</p>
 
                     <h2>${finalPrice}</h2>
                 </div>
@@ -92,21 +96,21 @@ export default function ProductDetail() {
                 </button>
 
                 {/* Preparacion */}
-                {product.options?.styles?.length >0 && (
+                {product.options?.styles?.length > 0 && (
                     <div className="product-detail__section">
 
                         <h3>Preparación</h3>
 
                         <div className="product-detail__chips">
-                        {product.options.styles.map((s)=>(
-                            <button
-                            key={s}
-                            className={`chip ${style === s ? "chip--active" : ""}`}
-                            onClick={()=> setStyle(s)}
-                            >
-                                {s}
-                            </button>
-                        ))}
+                            {product.options.styles.map((s) => (
+                                <button
+                                    key={s}
+                                    className={`chip ${style === s ? "chip--active" : ""}`}
+                                    onClick={() => setStyle(s)}
+                                >
+                                    {s}
+                                </button>
+                            ))}
                         </div>
                     </div>
                 )}
@@ -133,6 +137,35 @@ export default function ProductDetail() {
                         </div>
 
                     </div>
+                )}
+
+                {product.options?.coffee?.length > 0 && (
+
+                    <div className="product-detail__section">
+
+                        <h3>Tipo de café</h3>
+
+                        <div className="product-detail__chips">
+
+                            {product.options.coffee.map((c) => (
+
+                                <button
+                                    key={c}
+                                    className={`chip ${coffee === c ? "chip--active" : ""
+                                        }`}
+                                    onClick={() => setCoffee(c)}
+                                >
+
+                                    {c}
+
+                                </button>
+
+                            ))}
+
+                        </div>
+
+                    </div>
+
                 )}
 
                 {/* Leches */}
@@ -180,60 +213,41 @@ export default function ProductDetail() {
 
                     </div>
                 )}
-                
+
 
 
                 {/* Extras */}
-                <div className="product-detail__section">
+                {product.options?.extras?.length > 0 && (
 
-                    <h3>Extras</h3>
+                    <div className="product-detail__section">
 
-                    <div className="product-detail__extras">
+                        <h3>Extras</h3>
 
-                        <label>
-                            <input
-                                type="checkbox"
-                                onChange={() => toggleExtra("shot")}
-                            />
-                            Extra Shot (+$15)
-                        </label>
+                        <div className="product-detail__extras">
 
-                        <label>
-                            <input
-                                type="checkbox"
-                                onChange={() => toggleExtra("splenda")}
-                            />
-                            Splenda
-                        </label>
+                            {product.options.extras.map(extra => (
 
-                        <label>
-                            <input
-                                type="checkbox"
-                                onChange={() => toggleExtra("mascabado")}
-                            />
-                            Mascabado
-                        </label>
+                                <label key={extra.id}>
 
-                        <label>
-                            <input
-                                type="checkbox"
-                                onChange={() => toggleExtra("stevia")}
-                            />
-                            Stevia
-                        </label>
+                                    <input
+                                        type="checkbox"
+                                        checked={extras[extra.id] || false}
+                                        onChange={() => toggleExtra(extra.id)}
+                                    />
 
-                        <label>
-                            <input
-                                type="checkbox"
-                                onChange={() => toggleExtra("foam")}
-                            />
-                            Foam
-                        </label>
+                                    {extra.name}
+
+                                    {extra.price > 0 && ` (+$${extra.price})`}
+
+                                </label>
+
+                            ))}
+
+                        </div>
 
                     </div>
 
-                </div>
-
+                )}
                 {/* Notas */}
                 <div className="product-detail__section">
 
@@ -242,7 +256,7 @@ export default function ProductDetail() {
                     <textarea
                         value={note}
                         onChange={(e) => setNote(e.target.value)}
-                        placeholder="Ej: menos hielo..."
+                        placeholder="¿Alguna indicación especial para tu pedido?"
                     />
 
                 </div>
@@ -258,6 +272,7 @@ export default function ProductDetail() {
                             image: product.image,
                             price: finalPrice,
                             size,
+                            coffee,
                             milk,
                             flavor,
                             extras,
@@ -267,8 +282,8 @@ export default function ProductDetail() {
                         });
 
                         setShowToast(true);
-                        
-                        setTimeout(()=>{
+
+                        setTimeout(() => {
                             navigate(-1);
                         }, 1200);
 
@@ -277,9 +292,9 @@ export default function ProductDetail() {
                     Agregar al carrito · ${finalPrice}
                 </button>
                 <Toast
-                message="Producto agregado 🛒"
-                type="success"
-                isVisible={showToast}
+                    message="Producto agregado 🛒"
+                    type="success"
+                    isVisible={showToast}
                 />
 
             </div>

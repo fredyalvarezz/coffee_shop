@@ -1,10 +1,16 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useState } from "react";
 import Sidebar from "./components/Sidebar/Sidebar";
+import Header from "./components/Header/Header";
 import Home from "./pages/Home/Home";
 import Menu from "./pages/Menu/Menu";
 import ProductDetail from "./pages/ProductDetail/ProductDetail";
 import Orders from "./pages/Orders/Orders";
+import Login from "./pages/Login/Login";
+import Register from "./pages/Register/Register";
+import Admin from "./pages/Admin/Admin";
+import Profile from "./pages/Profile/Profile";
+
 
 function App() {
 
@@ -20,33 +26,55 @@ function App() {
           setIsOpen={setSidebarOpen}
         />
 
-        <main className="content">
-          <Routes>
+        <div className="app__main">
 
-            <Route
-              path="/"
-              element={<Home />}
-            />
+          <Header />
 
-            <Route
-              path="/menu"
-              element={<Menu />}
-            />
+          <main className="content">
+            <Routes>
 
-            <Route
-              path="/product/:id"
-              element={<ProductDetail />}
-            />
+              <Route
+                path="/"
+                element={<Home />}
+              />
 
-            <Route
-              path="/pedidos"
-              element={<Orders />}
-            />
+              <Route
+                path="/menu"
+                element={<Menu />}
+              />
 
-          </Routes>
+              <Route
+                path="/product/:id"
+                element={<ProductDetail />}
+              />
 
-        </main>
+              <Route
+                path="/pedidos"
+                element={<Orders />}
+              />
 
+              <Route path="/login"
+                element={<Login />}
+              />
+              <Route path="/register"
+                element={<Register />}
+              />
+
+              <Route
+                path="/perfil"
+                element={<Profile />}
+              />
+
+              <Route
+                path="/admin"
+                element={<Admin />}
+              />
+
+            </Routes>
+
+          </main>
+
+        </div>
       </div>
     </BrowserRouter>
   );

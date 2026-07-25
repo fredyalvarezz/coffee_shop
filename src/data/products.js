@@ -1,255 +1,377 @@
+import {
+    coffeeOptions,
+    chaiOptions,
+    sizes,
+    flavors,
+    milks,
+    styles,
+    extras,
+} from "./productOptions";
+
 const products = [
     {
         id: 1,
         title: "Latte",
+        description: "Espresso con leche vaporizada.",
         basePrice: 45,
-        category: "calientes",
+        productType: "Café",
+        menuCategory: "Calientes",
         image: "/cafe1.jpg",
         stock: true,
         customizable: true,
         options: {
-            sizes: ["chico", "mediano", "grande"],
-            flavors: ["regular", "avellana", "vainilla", "caramelo"],
-            milks: ["entera", "deslactosada", "light", "almendra", "avena", "coco"]
-        }
+            coffee: coffeeOptions,
+            sizes,
+            flavors,
+            milks,
+            extras,
+        },
     },
     {
         id: 2,
         title: "Capuccino",
+        description: "Espresso con leche vaporizada y espuma cremosa.",
         basePrice: 55,
-        category: "calientes",
+        productType: "Café",
+        menuCategory: "Calientes",
         image: "/cafe2.jpg",
         stock: true,
         customizable: true,
         options: {
-            sizes: ["chico", "mediano", "grande"],
-            flavors: ["regular", "avellana", "vainilla", "caramelo"],
-            milks: ["entera", "deslactosada", "light", "almendra", "avena", "coco"]
-        }
+            coffee: coffeeOptions,
+            sizes,
+            flavors,
+            milks,
+            extras,
+        },
     },
     {
         id: 3,
         title: "Iced Latte",
+        description: "Latte frío servido con hielo.",
         basePrice: 55,
-        category: "frias",
+        menuCategory: "Frías",
+        productType: "Café",
         image: "/cafe3.jpg",
         stock: true,
         customizable: true,
         options: {
-            sizes: ["chico", "mediano", "grande"],
-            flavors: ["regular", "avellana", "vainilla", "caramelo"],
-            milks: ["entera", "deslactosada", "light", "almendra", "avena", "coco"]
-        }
+            coffee: coffeeOptions,
+            sizes,
+            flavors,
+            milks,
+            extras,
+        },
     },
     {
         id: 4,
         title: "Frappé Mocha",
+        description: "Bebida frappé de café con chocolate.",
         basePrice: 55,
-        category: "frappes",
+        productType: "Frappé",
+        menuCategory: "Frappés",
         image: "/cafe4.jpg",
         stock: true,
         customizable: true,
         options: {
-            sizes: ["chico", "mediano", "grande"],
-            milks: ["entera", "deslactosada", "light", "almendra", "avena", "coco"]
-        }
+            coffee: coffeeOptions,
+            sizes,
+            milks,
+            extras,
+        },
     },
     {
         id: 5,
         title: "Pumpkin Latte",
+        description: "Latte con especias y sabor a calabaza.",
         basePrice: 55,
-        category: "temporada",
+        productType: "Café",
+        menuCategory: "Temporada",
         image: "/cafe5.jpg",
         stock: false,
         customizable: true,
         options: {
-            styles: ["caliente", "frio", "frappe"],
-            sizes: ["chico", "mediano", "grande"],
-            milks: ["entera", "deslactosada", "light", "almendra", "avena", "coco"]
-        }
+            coffee: coffeeOptions,
+            styles,
+            sizes,
+            milks,
+            extras,
+        },
     },
-
     {
         id: 6,
         title: "Espresso",
+        description: "Café espresso intenso y aromático.",
         basePrice: 25,
-        category: "calientes",
+        productType: "Café",
+        menuCategory: "Calientes",
         image: "/espresso.jpg",
         stock: true,
         customizable: true,
         options: {
-            sizes: ["solo", "doble"]
+            coffee: coffeeOptions,
+            sizes: ["solo", "doble"],
+            extras,
         },
     },
     {
         id: 7,
         title: "Americano",
+        description: "Espresso diluido con agua caliente.",
         basePrice: 30,
-        category: "calientes",
+        productType: "Café",
+        menuCategory: "Calientes",
         image: "/americano.jpg",
         stock: true,
         customizable: true,
         options: {
-            sizes: ["chico", "mediano", "grande"]
-        }
+            coffee: coffeeOptions,
+            sizes,
+            extras,
+        },
     },
     {
         id: 8,
         title: "Mocha",
+        description: "Espresso con chocolate y leche vaporizada.",
         basePrice: 55,
-        category: "calientes",
+        productType: "Café",
+        menuCategory: "Calientes",
         image: "/mocha.jpg",
         stock: true,
         customizable: true,
         options: {
-            sizes: ["chico", "mediano", "grande"],
-            milks: ["entera", "deslactosada", "light", "almendra", "avena", "coco"]
-        }
+            coffee: coffeeOptions,
+            sizes,
+            milks,
+            extras,
+        },
     },
     {
         id: 9,
         title: "Chai Latte",
+        description: "Bebida de té chai con leche vaporizada.",
         basePrice: 55,
-        category: "calientes",
+        productType: "Té",
+        menuCategory: "Calientes",
         image: "/chai.jpg",
         stock: true,
         customizable: true,
         options: {
-            sizes: ["chico", "mediano", "grande"],
-            milks: ["entera", "deslactosada", "light", "almendra", "avena", "coco"]
-        }
+            coffee: chaiOptions,
+            sizes,
+            milks,
+            extras,
+        },
     },
     {
         id: 10,
         title: "Taro Latte",
+        description: "Latte preparado con taro de sabor dulce.",
         basePrice: 55,
-        category: "calientes",
+        productType: "Bebida",
+        menuCategory: "Calientes",
         image: "/taro.jpg",
         stock: true,
         customizable: true,
         options: {
-            sizes: ["chico", "mediano", "grande"],
-            milks: ["entera", "deslactosada", "light", "almendra", "avena", "coco"]
-        }
+            sizes,
+            milks,
+            extras,
+        },
     },
     {
         id: 11,
         title: "Iced Americano",
+        description: "Americano frío servido con hielo.",
         basePrice: 55,
-        category: "frias",
+        productType: "Café",
+        menuCategory: "Frías",
         image: "/icedamericano.jpg",
         stock: true,
         customizable: true,
         options: {
-            sizes: ["chico", "mediano", "grande"],
-        }
+            coffee: coffeeOptions,
+            sizes,
+            extras,
+        },
     },
     {
         id: 12,
         title: "Cold Brew",
+        description: "Café extraído en frío durante varias horas.",
         basePrice: 55,
-        category: "frias",
+        productType: "Café",
+        menuCategory: "Frías",
         image: "/coldbrew.jpg",
         stock: true,
         customizable: true,
         options: {
-            sizes: ["chico", "mediano", "grande"],
-        }
+            coffee: coffeeOptions,
+            sizes,
+            extras,
+        },
     },
     {
         id: 13,
         title: "Iced Mocha",
+        description: "Mocha frío con hielo y chocolate.",
         basePrice: 55,
-        category: "frias",
+        productType: "Café",
+        menuCategory: "Frías",
         image: "/icedmocha.jpg",
         stock: true,
         customizable: true,
         options: {
-            sizes: ["chico", "mediano", "grande"],
-            milks: ["entera", "deslactosada", "light", "almendra", "avena", "coco"]
-        }
+            coffee: coffeeOptions,
+            sizes,
+            milks,
+            extras,
+        },
     },
     {
         id: 14,
         title: "Frappé Caramelo",
+        description: "Frappé de café con salsa de caramelo.",
         basePrice: 55,
-        category: "frappes",
+        productType: "Frappé",
+        menuCategory: "Frappés",
         image: "/frappecaramelo.jpg",
         stock: true,
         customizable: true,
         options: {
-            sizes: ["chico", "mediano", "grande"],
-            milks: ["entera", "deslactosada", "light", "almendra", "avena", "coco"]
-        }
+            coffee: coffeeOptions,
+            sizes,
+            milks,
+            extras,
+        },
     },
     {
         id: 15,
         title: "Frappé Vainilla",
+        description: "Frappé de café con vainilla.",
         basePrice: 55,
-        category: "frappes",
+        productType: "Frappé",
+        menuCategory: "Frappés",
         image: "/frappevainilla.jpg",
         stock: true,
         customizable: true,
         options: {
-            sizes: ["chico", "mediano", "grande"],
-            milks: ["entera", "deslactosada", "light", "almendra", "avena", "coco"]
-        }
+            coffee: coffeeOptions,
+            sizes,
+            milks,
+            extras,
+        },
     },
     {
         id: 16,
         title: "Frappé Oreo",
+        description: "Frappé cremoso con galleta Oreo.",
         basePrice: 55,
-        category: "frappes",
+        productType: "Frappé",
+        menuCategory: "Frappés",
         image: "/frappeoreo.jpg",
         stock: true,
         customizable: true,
         options: {
-            sizes: ["chico", "mediano", "grande"],
-            milks: ["entera", "deslactosada", "light", "almendra", "avena", "coco"]
-        }
+            coffee: coffeeOptions,
+            sizes,
+            milks,
+            extras,
+        },
     },
     {
         id: 17,
         title: "Frappé Mazapan",
+        description: "Frappé con el tradicional sabor a mazapán.",
         basePrice: 55,
-        category: "frappes",
+        productType: "Frappé",
+        menuCategory: "Frappés",
         image: "/frappemazapan.jpg",
         stock: true,
         customizable: true,
         options: {
-            sizes: ["chico", "mediano", "grande"],
-            milks: ["entera", "deslactosada", "light", "almendra", "avena", "coco"]
-        }
+            coffee: coffeeOptions,
+            sizes,
+            milks,
+            extras,
+        },
     },
     {
         id: 18,
         title: "Peppermint Mocha",
+        description: "Mocha con un refrescante toque de menta.",
         basePrice: 55,
-        category: "temporada",
+        productType: "Café",
+        menuCategory: "Temporada",
         image: "/Peppermintmocha.jpg",
         stock: true,
         customizable: true,
         options: {
-            styles: ["caliente", "frio", "frappe"],
-            sizes: ["chico", "mediano", "grande"],
-            milks: ["entera", "deslactosada", "light", "almendra", "avena", "coco"]
-        }
+            coffee: coffeeOptions,
+            styles,
+            sizes,
+            milks,
+            extras,
+        },
     },
     {
         id: 19,
         title: "Cherry Mocha",
+        description: "Mocha con un delicado sabor a cereza.",
         basePrice: 55,
-        category: "temporada",
+        productType: "Café",
+        menuCategory: "Temporada",
         image: "/Cherrymocha.jpg",
         stock: true,
         customizable: true,
         options: {
-            styles: ["caliente", "frio", "frappe"],
-            sizes: ["chico", "mediano", "grande"],
-            milks: ["entera", "deslactosada", "light", "almendra", "avena", "coco"]
-        }
+            coffee: coffeeOptions,
+            styles,
+            sizes,
+            milks,
+            extras,
+        },
     },
 
+    {
+    id: 20,
+    title: "Cheesecake",
+    description: "Cheesecake estilo Nueva York.",
+    basePrice: 75,
+    productType: "Postre",
+    menuCategory: "Postres",
+    image: "/cheesecake.jpg",
+    stock: true,
+    customizable: false,
+    options: {}
+},
+
+{
+    id: 21,
+    title: "Brownie",
+    description: "Brownie de chocolate con nuez.",
+    basePrice: 45,
+    productType: "Postre",
+    menuCategory: "Postres",
+    image: "/brownie.jpg",
+    stock: true,
+    customizable: false,
+    options: {}
+},
+
+{
+    id: 22,
+    title: "Pay de Limón",
+    description: "Pay de limón casero.",
+    basePrice: 60,
+    productType: "Postre",
+    menuCategory: "Postres",
+    image: "/paylimon.jpg",
+    stock: false,
+    customizable: false,
+    options: {}
+},
 ];
 
 export default products;

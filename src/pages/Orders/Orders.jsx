@@ -5,6 +5,7 @@ import "./Orders.css";
 
 import Modal from "../../components/Modal/Modal";
 import Toast from "../../components/Toast/Toast";
+import { extras as extrasOptions } from "../../data/productOptions";
 
 export default function Orders() {
 
@@ -16,13 +17,9 @@ export default function Orders() {
         clearCart,
     } = useCart();
 
-    const extraLabels = {
-    shot: "Extra Shot",
-    foam: "Foam",
-    splenda: "Splenda",
-    mascabado: "Mascabado",
-    stevia: "Stevia",
-};
+    const extraLabels = Object.fromEntries(
+        extrasOptions.map(extra => [extra.id, extra.name])
+    );
 
     const getExtras = (extras) => {
 
@@ -74,19 +71,26 @@ export default function Orders() {
                             <div className="orders__info">
 
                                 <h3>{item.title}</h3>
-
                                 <p>
-                                    {item.size} • {item.milk}
+
+                                    {item.size && <>Tamaño: {item.size}<br /></>}
+
+                                    {item.coffee && <>Café: {item.coffee}<br /></>}
+
+                                    {item.milk && <>Leche: {item.milk}<br /></>}
+
+                                    {item.flavor && <>Sabor: {item.flavor}</>}
+
                                 </p>
 
-                                <small>
-                                    {item.flavor}
-                                </small>
-
                                 {item.style && (
+
                                     <small>
+
                                         Preparación: {item.style}
+
                                     </small>
+
                                 )}
 
                                 {getExtras(item.extras) && (
@@ -161,7 +165,7 @@ export default function Orders() {
                     </div>
 
                     <button className="orders__pay"
-                    disabled={cart.length === 0}>
+                        disabled={cart.length === 0}>
                         Pagar
                     </button>
 
@@ -169,7 +173,7 @@ export default function Orders() {
 
             </div>
 
-        {/* Modal Confirmación */}
+            {/* Modal Confirmación */}
             {showConfirm && (
                 <Modal onClose={() => setShowConfirm(false)}>
 
@@ -223,6 +227,6 @@ export default function Orders() {
                 type="warning"
                 isVisible={showToast}
             />
-            </>
-            );
+        </>
+    );
 }

@@ -17,15 +17,6 @@
     color: var(--color-text);
 }
 
-.home__header-search {
-    padding: 10px 15px;
-    border-radius: 20px;
-    border: none;
-    background: var(--color-surface);
-    box-shadow: var(--shadow-soft);
-    outline: none;
-    ;
-}
 
 /* Banner */
 .home__banner {
@@ -36,7 +27,7 @@
     height: 100%;
     border-radius: 20px;
     padding: 20px;
-    background-image: url('../../images/caramel-cloud.jpg');
+    background-image: url('../../assets//images/caramel-cloud.jpg');
     background-size: cover;
     background-position: center;
 

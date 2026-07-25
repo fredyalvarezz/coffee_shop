@@ -1,0 +1,168 @@
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 20px;
+
+    padding: 20px 30px;
+
+    background: var(--color-bg);
+
+    border-bottom: 1px solid var(--color-border);
+}
+
+.header__search {
+    flex: 1;
+}
+
+.header__input {
+    width: 100%;
+    max-width: 450px;
+
+    padding: 12px 16px;
+
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+
+    background: var(--color-surface);
+
+    color: var(--color-text);
+
+    font-size: 14px;
+}
+
+.header__input:focus {
+    outline: none;
+
+    border-color: var(--color-primary);
+
+    box-shadow: 0 0 0 3px rgba(95, 163, 163, 0.15);
+}
+
+.header__actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.header__link {
+    color: var(--color-text);
+    text-decoration: none;
+    margin: 20px;
+}
+
+.header__button {
+    text-decoration: none;
+
+    padding: 10px 16px;
+
+    border-radius: 10px;
+
+    background: var(--color-primary);
+    color: white;
+}
+
+.header__user {
+    border: none;
+
+    padding: 10px 16px;
+
+    border-radius: 12px;
+
+    background: var(--color-surface-soft);
+
+    color: var(--color-text);
+
+    cursor: pointer;
+}
+
+.header__user-wrapper {
+    position: relative;
+}
+
+.header__dropdown {
+    position: absolute;
+
+    top: 110%;
+    right: 0;
+
+    min-width: 180px;
+
+    background: var(--color-surface);
+
+    border: 1px solid var(--color-border);
+
+    border-radius: 12px;
+
+    overflow: hidden;
+
+    box-shadow: var(--shadow-hover);
+
+    z-index: 100;
+
+    animation: dropdownFade 0.2s ease;
+}
+
+.header__dropdown-link,
+.header__logout {
+    width: 100%;
+
+    display: block;
+
+    padding: 12px 16px;
+
+    text-align: left;
+
+    background: none;
+    border: none;
+
+    color: var(--color-text);
+
+    text-decoration: none;
+
+    cursor: pointer;
+}
+
+.header__dropdown-link:hover,
+.header__logout:hover {
+    background: var(--color-surface-soft);
+}
+
+@media (max-width: 768px) {
+
+    .header {
+        flex-direction: column;
+        align-items: stretch;
+
+        gap: 12px;
+
+        padding: 15px 20px;
+    }
+
+    .header__search {
+        width: 85%;
+        margin-left: 50px;
+    }
+
+    .header__input {
+        max-width: 100%;
+    }
+
+    .header__actions {
+        justify-content: flex-end;
+    }
+}
+
+@keyframes dropdownFade {
+
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

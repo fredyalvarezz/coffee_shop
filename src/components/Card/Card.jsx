@@ -36,7 +36,7 @@ const goToProduct = () => {
         goToProduct();
       }}
       >
-        {stock ? "Personalizar" : "Sin stock"}</button>
+        {stock ? "Seleccionar" : "Sin stock"}</button>
     </div>
   );
 }
