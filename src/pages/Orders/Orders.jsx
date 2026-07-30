@@ -6,6 +6,7 @@ import "./Orders.css";
 import Modal from "../../components/Modal/Modal";
 import Toast from "../../components/Toast/Toast";
 import { extras as extrasOptions } from "../../data/productOptions";
+import { FALLBACK_IMAGE, handleImageError } from "../../utils/fallbackImage";
 
 export default function Orders() {
 
@@ -63,9 +64,10 @@ export default function Orders() {
                         >
 
                             <img
-                                src={item.image}
+                                src={item.image || FALLBACK_IMAGE}
                                 alt={item.title}
                                 className="orders__image"
+                                onError={handleImageError}
                             />
 
                             <div className="orders__info">
@@ -77,17 +79,19 @@ export default function Orders() {
 
                                     {item.coffee && <>Café: {item.coffee}<br /></>}
 
+                                    {item.infusion && <>Infusión: {item.infusion}<br /></>}
+
                                     {item.milk && <>Leche: {item.milk}<br /></>}
 
                                     {item.flavor && <>Sabor: {item.flavor}</>}
 
                                 </p>
 
-                                {item.style && (
+                                {item.preparation && (
 
                                     <small>
 
-                                        Preparación: {item.style}
+                                        Preparación: {item.preparation}
 
                                     </small>
 

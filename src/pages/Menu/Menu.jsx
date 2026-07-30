@@ -1,7 +1,7 @@
 // Menu.jsx
 import "./Menu.css";
 import { useSearchParams } from "react-router-dom";
-import products from "../../data/products";
+import { useProducts } from "../../context/ProductsContext";
 import Card from "../../components/Card/Card";
 
 const CATEGORY_MAP = {
@@ -14,6 +14,8 @@ const CATEGORY_MAP = {
 
 export default function Menu() {
   const [searchParams, setSearchParams] = useSearchParams();
+
+  const { products } = useProducts();
 
   const activeCat = searchParams.get("cat") || "calientes";
 

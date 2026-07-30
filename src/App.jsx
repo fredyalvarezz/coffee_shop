@@ -10,6 +10,7 @@ import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
 import Admin from "./pages/Admin/Admin";
 import Profile from "./pages/Profile/Profile";
+import { ProductsProvider } from "./context/ProductsContext";
 
 
 function App() {
@@ -20,6 +21,8 @@ function App() {
     <BrowserRouter>
 
       <div className="app">
+
+        <ProductsProvider>
 
         <Sidebar
           isOpen={sidebarOpen}
@@ -75,6 +78,7 @@ function App() {
           </main>
 
         </div>
+        </ProductsProvider>
       </div>
     </BrowserRouter>
   );

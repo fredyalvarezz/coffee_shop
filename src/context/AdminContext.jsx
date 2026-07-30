@@ -4,7 +4,8 @@ import {
   useState,
 } from "react";
 
-import productsData from "../data/products";
+import { useProducts } from "./ProductsContext";
+
 import usersData from "../data/users";
 import ordersData from "../data/orders";
 import inventoryData from "../data/inventory";
@@ -15,7 +16,15 @@ export const useAdmin = () => useContext(AdminContext);
 
 export function AdminProvider({ children }) {
 
-  const [products, setProducts] = useState(productsData);
+  // products ya NO vive aquí — se lee directo de ProductsContext, que es
+  // la misma fuente que usan ProductForm, Menu y ProductDetail. Así, un
+  // producto que se agrega desde el formulario aparece también aquí sin
+  // necesidad de sincronizar dos copias por separado.
+  //
+  // IMPORTANTE: por esto, <AdminProvider> debe quedar DENTRO de
+  // <ProductsProvider> en el árbol de componentes (ej. en App.jsx, o
+  // envolviendo <AdminLayout /> ya que eso vive dentro de ProductsProvider).
+  const { products, addProduct, updateProduct, deleteProduct } = useProducts();
 
   const [users, setUsers] = useState(usersData);
 
@@ -27,7 +36,9 @@ export function AdminProvider({ children }) {
     <AdminContext.Provider
       value={{
         products,
-        setProducts,
+        addProduct,
+        updateProduct,
+        deleteProduct,
 
         users,
         setUsers,

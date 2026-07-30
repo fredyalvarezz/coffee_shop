@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import products from "../../data/products";
+import { useProducts } from "../../context/ProductsContext";
 import { useCart } from "../../context/CartContext";
 import { useNavigate } from "react-router-dom";
 
 import "./ProductDetail.css";
 import Toast from "../../components/Toast/Toast";
+import { FALLBACK_IMAGE, handleImageError } from "../../utils/fallbackImage";
 
 export default function ProductDetail() {
 
@@ -13,35 +14,48 @@ export default function ProductDetail() {
 
     const { id } = useParams();
 
+    const { products } = useProducts();
+
     const product = products.find((p) => p.id === Number(id));
 
     const { addToCart } = useCart();
 
-    const [size, setSize] = useState(product.options?.sizes?.[0] || null);
+    const [size, setSize] = useState(product?.options?.sizes?.[0] || null);
 
-    const [flavor, setFlavor] = useState(product.options?.flavors?.[0] || null);
+    const [flavor, setFlavor] = useState(product?.options?.flavors?.[0] || null);
 
-    const [milk, setMilk] = useState(product.options?.milks?.[0] || null);
+    const [milk, setMilk] = useState(product?.options?.milks?.[0] || null);
 
-    const [style, setStyle] = useState(product.options?.styles?.[0] || null);
+    const [preparation, setPreparation] = useState(product?.options?.preparationOptions?.[0] || null);
 
     const [note, setNote] = useState("");
 
-    const [extras, setExtras] = useState({}); 
+    const [extras, setExtras] = useState({});
 
     const [coffee, setCoffee] = useState(
-        product.options?.coffee?.[0] || null
+        product?.options?.coffee?.[0] || null
     );
 
     const [showToast, setShowToast] = useState(false);
 
+    // Si el id no corresponde a ningún producto (ej. link viejo, o el
+    // producto se borró), evita que truene tratando de leer sus datos.
+    if (!product) {
+        return (
+            <div className="product-detail__not-found">
+                <p>No encontramos ese producto.</p>
+                <button onClick={() => navigate(-1)}>← Volver</button>
+            </div>
+        );
+    }
+
     let finalPrice = product.basePrice;
 
-    if (size === "mediano") finalPrice += 5;
-    if (size === "grande") finalPrice += 10;
+    if (size === "Mediano") finalPrice += 5;
+    if (size === "Grande") finalPrice += 10;
 
-    if (style === "frio") finalPrice += 5;
-    if (style === "frappe") finalPrice += 10;
+    if (preparation === "Frío") finalPrice += 5;
+    if (preparation === "Frappé") finalPrice += 10;
 
     product.options?.extras?.forEach((extra) => {
 
@@ -68,14 +82,21 @@ export default function ProductDetail() {
 
                 <div className="product-detail__image-wrapper">
                     <img
-                        src={product.image}
+                        src={product.image || FALLBACK_IMAGE}
                         alt={product.title}
                         className="product-detail__image"
+                        onError={handleImageError}
                     />
                 </div>
 
                 <div className="product-detail__info">
                     <h1>{product.title}</h1>
+
+                    {product.options?.infusionType && (
+                        <p className="product-detail__badge">
+                            Infusión: {product.options.infusionType}
+                        </p>
+                    )}
 
                     <p>{product.description}</p>
 
@@ -96,19 +117,19 @@ export default function ProductDetail() {
                 </button>
 
                 {/* Preparacion */}
-                {product.options?.styles?.length > 0 && (
+                {product.options?.preparationOptions?.length > 0 && (
                     <div className="product-detail__section">
 
                         <h3>Preparación</h3>
 
                         <div className="product-detail__chips">
-                            {product.options.styles.map((s) => (
+                            {product.options.preparationOptions.map((p) => (
                                 <button
-                                    key={s}
-                                    className={`chip ${style === s ? "chip--active" : ""}`}
-                                    onClick={() => setStyle(s)}
+                                    key={p}
+                                    className={`chip ${preparation === p ? "chip--active" : ""}`}
+                                    onClick={() => setPreparation(p)}
                                 >
-                                    {s}
+                                    {p}
                                 </button>
                             ))}
                         </div>
@@ -273,10 +294,11 @@ export default function ProductDetail() {
                             price: finalPrice,
                             size,
                             coffee,
+                            infusion: product.options?.infusionType || null,
                             milk,
                             flavor,
                             extras,
-                            style,
+                            preparation,
                             note,
                             qty: 1,
                         });

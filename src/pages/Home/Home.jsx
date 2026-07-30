@@ -43,6 +43,9 @@ export default function Home() {
           <button className="home__section-categorias-button" onClick={() => navigate("/menu?cat=temporada")}>
             Temporada
             </button>
+            <button className="home__section-categorias-button" onClick={() => navigate("/menu?cat=postres")}>
+            Postres
+            </button>
         </div>
       </section>
     </div>
