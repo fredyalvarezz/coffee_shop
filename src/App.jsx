@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { useState } from "react";
 import Sidebar from "./components/Sidebar/Sidebar";
 import Header from "./components/Header/Header";
@@ -18,7 +18,7 @@ function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <BrowserRouter>
+    
 
       <div className="app">
 
@@ -80,7 +80,7 @@ function App() {
         </div>
         </ProductsProvider>
       </div>
-    </BrowserRouter>
+    
   );
 }
 

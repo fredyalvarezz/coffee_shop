@@ -1,14 +1,22 @@
 import "./Header.css";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+
 
 export default function Header() {
 
     const { user, logout } = useAuth();
     const [menuOpen, setMenuOpen] = useState(false);
     const location = useLocation();
+    const navigate = useNavigate();
+
+
+    useEffect(() => {
+        setMenuOpen(false);
+    }, [location.pathname]);
+
+   
 
     if (
         location.pathname === "/login" ||

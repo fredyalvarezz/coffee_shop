@@ -5,11 +5,15 @@ import {
   useEffect,
 } from "react";
 
+import { useNavigate } from "react-router-dom";
+
 const AuthContext = createContext();
 
 export const useAuth = () => useContext(AuthContext);
 
 export function AuthProvider ({children}) {
+
+    const navigate = useNavigate();
 
     const [user, setUser] = useState(() => {
         const savedUser = localStorage.getItem("user");
@@ -31,6 +35,7 @@ export function AuthProvider ({children}) {
 
     const logout = () => {
         setUser(null);
+        navigate("/login", { replace: true });
     };
 
     return (
