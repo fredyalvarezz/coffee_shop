@@ -1,7 +1,7 @@
 import "./ProductCard.css";
 import { FALLBACK_IMAGE, handleImageError } from "../../../utils/fallbackImage";
 
-export default function ProductCard({ product }) {
+export default function ProductCard({ product, onEdit, onDelete }) {
 
     return (
 
@@ -38,11 +38,23 @@ export default function ProductCard({ product }) {
 
                 </span>
 
-                <button>
+                <div className="product-card__actions">
 
-                    Editar
+                    <button
+                        className="product-card__edit"
+                        onClick={onEdit}
+                    >
+                        Editar
+                    </button>
 
-                </button>
+                    <button
+                        className="product-card__delete"
+                        onClick={onDelete}
+                    >
+                        Eliminar
+                    </button>
+
+                </div>
 
             </div>
 

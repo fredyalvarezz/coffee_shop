@@ -42,13 +42,49 @@ const initialFormState = {
     },
 };
 
-export default function ProductForm() {
+// Convierte un producto ya existente (el que se va a editar) a la misma
+// forma que usa el estado del formulario. Si no hay producto (modo
+// "crear"), regresa el estado inicial vacío de siempre.
+function buildFormFromProduct(product) {
 
-    const { addProduct } = useProducts();
+    if (!product) return initialFormState;
+
+    return {
+        title: product.title || "",
+        description: product.description || "",
+        basePrice: product.basePrice ?? "",
+        productType: product.productType || "Café",
+        menuCategory: product.menuCategory || "Calientes",
+        image: product.image || "",
+        stock: product.stock ?? true,
+        customizable: product.customizable ?? true,
+        options: {
+            coffee: product.options?.coffee || [],
+            infusionType: product.options?.infusionType || "",
+            containsCoffee: product.options?.containsCoffee || false,
+            sizes: product.options?.sizes || [],
+            flavors: product.options?.flavors || [],
+            milks: product.options?.milks || [],
+            preparationOptions: product.options?.preparationOptions || [],
+            extras: product.options?.extras || [],
+        },
+    };
+
+}
+
+// product: si se manda, el formulario entra en modo "editar" (precargado
+//          con sus datos, y guarda con updateProduct en vez de addProduct)
+// onDone:  se llama después de guardar (en modo editar) o al cancelar,
+//          para que la pantalla que lo use decida a dónde regresar
+export default function ProductForm({ product = null, onDone = () => {} }) {
+
+    const { addProduct, updateProduct } = useProducts();
+
+    const isEditing = Boolean(product);
 
     const [showToast, setShowToast] = useState(false);
 
-    const [form, setForm] = useState(initialFormState);
+    const [form, setForm] = useState(() => buildFormFromProduct(product));
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -210,25 +246,42 @@ export default function ProductForm() {
             return;
         }
 
-        addProduct({
+        const productData = {
             title: form.title.trim(),
             description: form.description.trim(),
             basePrice: Number(form.basePrice),
             productType: form.productType,
             menuCategory: form.menuCategory,
-            image: form.image.trim(),
+            image: form.image,
             stock: form.stock,
             customizable: form.customizable,
             options: form.options,
-        });
+        };
 
-        setForm(initialFormState);
+        if (isEditing) {
 
-        setShowToast(true);
+            updateProduct(product.id, productData);
 
-        setTimeout(() => {
-            setShowToast(false);
-        }, 1500);
+            setShowToast(true);
+
+            setTimeout(() => {
+                setShowToast(false);
+                onDone();
+            }, 900);
+
+        } else {
+
+            addProduct(productData);
+
+            setForm(initialFormState);
+
+            setShowToast(true);
+
+            setTimeout(() => {
+                setShowToast(false);
+            }, 1500);
+
+        }
 
     };
 
@@ -237,7 +290,7 @@ export default function ProductForm() {
         <section className="product-form">
 
             <h2 className="product-form__title">
-                Nuevo Producto
+                {isEditing ? "Editar Producto" : "Nuevo Producto"}
             </h2>
 
             <div className="product-form__grid">
@@ -532,14 +585,28 @@ export default function ProductForm() {
 
             </div>
 
-            <button className="product-form__button"
-                onClick={handleSaveProduct}
-            >
-                Guardar producto
-            </button>
+            <div className="product-form__actions">
+
+                <button className="product-form__button"
+                    onClick={handleSaveProduct}
+                >
+                    {isEditing ? "Guardar cambios" : "Guardar producto"}
+                </button>
+
+                {isEditing && (
+                    <button
+                        type="button"
+                        className="product-form__button product-form__button--secondary"
+                        onClick={onDone}
+                    >
+                        Cancelar
+                    </button>
+                )}
+
+            </div>
 
             <Toast
-                message="Producto guardado ✅"
+                message={isEditing ? "Cambios guardados ✅" : "Producto guardado ✅"}
                 type="success"
                 isVisible={showToast}
             />

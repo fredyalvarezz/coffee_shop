@@ -18,6 +18,26 @@ export default function AdminLayout() {
 
     const [page, setPage] = useState("dashboard");
 
+    // Cuál producto se está editando (null = se va a crear uno nuevo).
+    // Vive aquí porque tanto Products (que dispara el "Editar") como
+    // NewProduct (que renderiza el formulario) lo necesitan.
+    const [editingProduct, setEditingProduct] = useState(null);
+
+    const goToNewProduct = () => {
+        setEditingProduct(null);
+        setPage("new-product");
+    };
+
+    const goToEditProduct = (product) => {
+        setEditingProduct(product);
+        setPage("new-product");
+    };
+
+    const backToProducts = () => {
+        setEditingProduct(null);
+        setPage("products");
+    };
+
     return (
 
         <section className="admin-layout">
@@ -37,11 +57,17 @@ export default function AdminLayout() {
 
                     {page === "products" && (
                         <Products
-                            setPage={setPage}
+                            onNewProduct={goToNewProduct}
+                            onEditProduct={goToEditProduct}
                         />
                     )}
 
-                    {page === "new-product" && <NewProduct />}
+                    {page === "new-product" && (
+                        <NewProduct
+                            product={editingProduct}
+                            onDone={backToProducts}
+                        />
+                    )}
 
                     {page === "inventory" && <Inventory />}
 

@@ -107,10 +107,10 @@
 .orders__clear {
   width: 100%;
   margin: 10px 0 20px;
-  background: rgba(255, 80, 80, 0.12);
+  background: rgba(184, 92, 92, 0.12);
   backdrop-filter: blur(10px);
-  color: #ff5c5c;
-  border: 1px solid rgba(255, 80, 80, 0.2);
+  color: var(--color-danger);
+  border: 1px solid rgba(184, 92, 92, 0.25);
   padding: 12px;
   border-radius: 14px;
   cursor: pointer;
@@ -119,7 +119,7 @@
 
 .orders__clear:hover {
   transform: translateY(-2px);
-  background: rgba(255, 80, 80, 0.18);
+  background: rgba(184, 92, 92, 0.18);
 }
 
 /* Empty  space */
@@ -159,11 +159,6 @@
   text-align: center;
 }
 
-.orders__confirm h2 {
-  margin-bottom: 10px;
-  color: var(--color-text);
-}
-
 .orders__confirm p {
   color: var(--color-text-soft);
   margin-bottom: 25px;
@@ -198,13 +193,13 @@
 /* Delete */
 
 .orders__confirm-delete {
-  background: rgba(255, 80, 80, 0.12);
-  color: #ff5c5c;
-  border: 1px solid rgba(255, 80, 80, 0.2);
+  background: rgba(184, 92, 92, 0.12);
+  color: var(--color-danger);
+  border: 1px solid rgba(184, 92, 92, 0.25);
 }
 
 .orders__confirm-delete:hover {
-  background: rgba(255, 80, 80, 0.18);
+  background: rgba(184, 92, 92, 0.18);
   transform: translateY(-2px);
 }
 

@@ -98,3 +98,64 @@
     cursor:pointer;
 
 }
+
+/* Acciones (Editar / Eliminar) */
+
+.product-card__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.product-card__actions button {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: .2s ease;
+}
+
+/* Editar: hover con el tono primario de la app */
+.product-card__actions button:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background-color: var(--color-surface-soft);
+  transform: translateY(-1px);
+}
+
+/* Editar: verde sólido, igual que tus otros botones principales
+   (.products__button, .product-form__button, .orders__pay) */
+.product-card__actions .product-card__edit {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+}
+
+.product-card__actions .product-card__edit:hover {
+  background-color: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+  color: white;
+  transform: translateY(-1px);
+}
+
+/* Eliminar: mismo estilo "suave/glass" que usa Orders (cliente).
+   Se usa el selector compuesto (.product-card__actions .product-card__delete)
+   para ganarle en especificidad a la regla general de arriba, que si no,
+   por incluir el elemento "button" tiene más peso y pisaría este color. */
+.product-card__actions .product-card__delete {
+  background-color: rgba(184, 92, 92, 0.12);
+  border-color: rgba(184, 92, 92, 0.25);
+  color: var(--color-danger);
+}
+
+.product-card__actions .product-card__delete:hover {
+  background-color: rgba(184, 92, 92, 0.18);
+  border-color: rgba(184, 92, 92, 0.25);
+  color: var(--color-danger);
+  transform: translateY(-1px);
+}

@@ -179,11 +179,12 @@ export default function Orders() {
 
             {/* Modal Confirmación */}
             {showConfirm && (
-                <Modal onClose={() => setShowConfirm(false)}>
+                <Modal
+                    title="Eliminar pedido"
+                    onClose={() => setShowConfirm(false)}
+                >
 
                     <div className="orders__confirm">
-
-                        <h2>Eliminar pedido</h2>
 
                         <p>
                             ¿Seguro que deseas eliminar todos los productos?

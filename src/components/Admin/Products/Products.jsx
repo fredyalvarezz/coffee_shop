@@ -4,6 +4,8 @@ import { useState } from "react";
 
 import ProductCard from "./ProductCard";
 import { useAdmin } from "../../../context/AdminContext";
+import Modal from "../../../components/Modal/Modal";
+import Toast from "../../../components/Toast/Toast";
 import {
   FaSearch,
   FaPlus
@@ -11,9 +13,9 @@ import {
 
 
 
-export default function Products({ setPage }) {
+export default function Products({ onNewProduct, onEditProduct }) {
 
-  const { products } = useAdmin();
+  const { products, deleteProduct } = useAdmin();
 
   const menuCategories = [
     "Todas",
@@ -23,6 +25,13 @@ export default function Products({ setPage }) {
   const [menuCategory, setMenuCategory] = useState("Todas");
 
   const [search, setSearch] = useState("");
+
+  // Producto que se está por eliminar (null = no hay modal abierto).
+  // Se guarda el producto completo (no solo el id) para poder mostrar
+  // su nombre en el mensaje de confirmación.
+  const [productToDelete, setProductToDelete] = useState(null);
+
+  const [showToast, setShowToast] = useState(false);
 
   const filteredProducts = products.filter((product) => {
 
@@ -40,84 +49,134 @@ export default function Products({ setPage }) {
 
   });
 
+  const confirmDelete = () => {
+
+    deleteProduct(productToDelete.id);
+
+    setProductToDelete(null);
+
+    setShowToast(true);
+
+    setTimeout(() => {
+      setShowToast(false);
+    }, 1500);
+
+  };
+
+  return (
+    <section className="products">
+
+      <div className="products__header">
+
+        <h1>Productos</h1>
+
+        <div className="products__controls">
+          <div className="products__search-container">
+            <FaSearch className="products__search-icon" />
+
+            <input
+              type="text"
+              className="products__search"
+              placeholder="Buscar producto..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+
+          <select
+            className="products__select"
+            value={menuCategory}
+            onChange={(e) => setMenuCategory(e.target.value)}
+          >
+            {menuCategories.map((menu) => (
+              <option
+                key={menu}
+                value={menu}
+              >
+                {menu}
+              </option>
+            ))}
+          </select>
 
 
 
-const categoryLabels = {
-  calientes: "Calientes",
-  frias: "Frías",
-  frappes: "Frappés",
-  temporada: "Temporada",
-};
+          <button className="products__button"
+            onClick={onNewProduct}>
+            <FaPlus />
+            Nuevo Producto
 
-return (
-  <section className="products">
+          </button>
 
-    <div className="products__header">
 
-      <h1>Productos</h1>
 
-      <div className="products__controls">
-        <div className="products__search-container">
-          <FaSearch className="products__search-icon" />
-
-          <input
-            type="text"
-            className="products__search"
-            placeholder="Buscar producto..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
         </div>
 
-        <select
-          className="products__select"
-          value={menuCategory}
-          onChange={(e) => setMenuCategory(e.target.value)}
-        >
-          {menuCategories.map((menu) => (
-            <option
-              key={menu}
-              value={menu}
-            >
-              {menu}
-            </option>
-          ))}
-        </select>
+      </div>
+      <p className="products__count">
 
+        {filteredProducts.length} productos encontrados
 
+      </p>
 
-        <button className="products__button"
-          onClick={() => setPage("new-product")}>
-          <FaPlus />
-          Nuevo Producto
+      <div className="products__grid">
 
-        </button>
+        {filteredProducts.map((product) => (
 
+          <ProductCard
+            key={product.id}
+            product={product}
+            onEdit={() => onEditProduct(product)}
+            onDelete={() => setProductToDelete(product)}
+          />
 
+        ))}
 
       </div>
 
-    </div>
-    <p className="products__count">
+      {/* Modal Confirmación de eliminar */}
+      {productToDelete && (
+        <Modal
+          title="Eliminar producto"
+          onClose={() => setProductToDelete(null)}
+        >
 
-      {filteredProducts.length} productos encontrados
+          <div className="products__confirm">
 
-    </p>
+            <p>
+              ¿Seguro que deseas eliminar "{productToDelete.title}"?
+              Esta acción no se puede deshacer.
+            </p>
 
-    <div className="products__grid">
+            <div className="products__confirm-buttons">
 
-      {filteredProducts.map((product) => (
+              <button
+                className="products__confirm-cancel"
+                onClick={() => setProductToDelete(null)}
+              >
+                Cancelar
+              </button>
 
-        <ProductCard
-          key={product.id}
-          product={product}
-        />
+              <button
+                className="products__confirm-delete"
+                onClick={confirmDelete}
+              >
+                Sí, eliminar
+              </button>
 
-      ))}
+            </div>
 
-    </div>
+          </div>
 
-  </section>
-);
+        </Modal>
+      )}
+
+      {/* Toast */}
+      <Toast
+        message="Producto eliminado 🗑️"
+        type="warning"
+        isVisible={showToast}
+      />
+
+    </section>
+  );
 }
