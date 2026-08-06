@@ -1,0 +1,130 @@
+.inventory-card {
+
+    background: var(--color-surface);
+
+    border-radius: 20px;
+
+    overflow: hidden;
+
+    box-shadow: var(--shadow-soft);
+
+}
+
+.inventory-card__body {
+
+    padding: 20px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+}
+
+.inventory-card__body h3 {
+
+    margin: 0;
+
+    color: var(--color-text);
+
+}
+
+.inventory-card__stock {
+
+    margin: 0;
+
+    font-size: 20px;
+
+    font-weight: 700;
+
+    color: var(--color-primary);
+
+}
+
+.inventory-card__minimum {
+
+    font-size: 13px;
+
+    color: var(--color-text-soft);
+
+}
+
+.inventory-card__badge {
+
+    display: inline-flex;
+
+    width: max-content;
+
+    padding: 6px 12px;
+
+    border-radius: 20px;
+
+    font-size: 13px;
+
+    margin-top: 4px;
+
+}
+
+.inventory-card__badge--ok {
+
+    background: #d8f3dc;
+
+    color: #2d6a4f;
+
+}
+
+.inventory-card__badge--low {
+
+    background: #ffd6d6;
+
+    color: #b42318;
+
+}
+
+/* Acciones (Editar / Eliminar) — mismo patrón que product-card__actions */
+
+.inventory-card__actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.inventory-card__actions button {
+    flex: 1;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid var(--color-border);
+    background-color: var(--color-surface);
+    color: var(--color-text);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+/* Editar: verde sólido, igual que en ProductCard */
+.inventory-card__actions .inventory-card__edit {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: white;
+}
+
+.inventory-card__actions .inventory-card__edit:hover {
+    background-color: var(--color-primary-hover);
+    border-color: var(--color-primary-hover);
+    color: white;
+    transform: translateY(-1px);
+}
+
+/* Eliminar: rojo suave/glass, igual que en ProductCard */
+.inventory-card__actions .inventory-card__delete {
+    background-color: rgba(184, 92, 92, 0.12);
+    border-color: rgba(184, 92, 92, 0.25);
+    color: var(--color-danger);
+}
+
+.inventory-card__actions .inventory-card__delete:hover {
+    background-color: rgba(184, 92, 92, 0.18);
+    border-color: rgba(184, 92, 92, 0.25);
+    color: var(--color-danger);
+    transform: translateY(-1px);
+}
