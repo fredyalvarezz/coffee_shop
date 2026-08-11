@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useState } from "react";
 import Sidebar from "./components/Sidebar/Sidebar";
 import Header from "./components/Header/Header";
@@ -12,6 +12,7 @@ import Admin from "./pages/Admin/Admin";
 import Profile from "./pages/Profile/Profile";
 import { ProductsProvider } from "./context/ProductsContext";
 import { CatalogProvider } from "./context/CatalogContext";
+import { InventoryProvider } from "./context/InventoryContext";
 
 
 function App() {
@@ -19,71 +20,70 @@ function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-  
+    <div className="app">
 
-      <div className="app">
+      <ProductsProvider>
+      <CatalogProvider>
+      <InventoryProvider>
 
-        <ProductsProvider>
-        <CatalogProvider>
+      <Sidebar
+        isOpen={sidebarOpen}
+        setIsOpen={setSidebarOpen}
+      />
 
-        <Sidebar
-          isOpen={sidebarOpen}
-          setIsOpen={setSidebarOpen}
-        />
+      <div className="app__main">
 
-        <div className="app__main">
+        <Header />
 
-          <Header />
+        <main className="content">
+          <Routes>
 
-          <main className="content">
-            <Routes>
+            <Route
+              path="/"
+              element={<Home />}
+            />
 
-              <Route
-                path="/"
-                element={<Home />}
-              />
+            <Route
+              path="/menu"
+              element={<Menu />}
+            />
 
-              <Route
-                path="/menu"
-                element={<Menu />}
-              />
+            <Route
+              path="/product/:id"
+              element={<ProductDetail />}
+            />
 
-              <Route
-                path="/product/:id"
-                element={<ProductDetail />}
-              />
+            <Route
+              path="/pedidos"
+              element={<Orders />}
+            />
 
-              <Route
-                path="/pedidos"
-                element={<Orders />}
-              />
+            <Route path="/login"
+              element={<Login />}
+            />
+            <Route path="/register"
+              element={<Register />}
+            />
 
-              <Route path="/login"
-                element={<Login />}
-              />
-              <Route path="/register"
-                element={<Register />}
-              />
+            <Route
+              path="/perfil"
+              element={<Profile />}
+            />
 
-              <Route
-                path="/perfil"
-                element={<Profile />}
-              />
+            <Route
+              path="/admin"
+              element={<Admin />}
+            />
 
-              <Route
-                path="/admin"
-                element={<Admin />}
-              />
+          </Routes>
 
-            </Routes>
+        </main>
 
-          </main>
-
-        </div>
-        </CatalogProvider>
-        </ProductsProvider>
       </div>
-    
+      </InventoryProvider>
+      </CatalogProvider>
+      </ProductsProvider>
+    </div>
   );
 }
 

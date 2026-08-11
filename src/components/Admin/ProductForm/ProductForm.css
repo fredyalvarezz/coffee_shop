@@ -198,6 +198,66 @@
   filter: none;
 }
 
+/* Receta (Inventario) */
+.product-form__recipe {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+}
+
+.product-form__recipe-row {
+  display: grid;
+  grid-template-columns: 1fr 100px 60px auto;
+  gap: .5rem;
+  align-items: center;
+}
+
+.product-form__recipe-row select,
+.product-form__recipe-row input {
+  padding: .6rem .75rem;
+  border: 1px solid #d6d6d6;
+  border-radius: 8px;
+  font-size: .9rem;
+}
+
+.product-form__recipe-unit {
+  color: var(--color-text-soft);
+  font-size: .85rem;
+}
+
+.product-form__recipe-remove {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-danger);
+  border-radius: 8px;
+  padding: .5rem .75rem;
+  font-size: .8rem;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.product-form__recipe-remove:hover {
+  background: rgba(184, 92, 92, .1);
+}
+
+.product-form__recipe-add {
+  align-self: flex-start;
+  min-width: auto;
+  padding: .6rem 1rem;
+  font-size: .85rem;
+}
+
+.product-form__hint {
+  color: var(--color-text-soft);
+  font-size: .85rem;
+}
+
+@media (max-width: 600px) {
+  .product-form__recipe-row {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 900px) {
 
     .product-form__grid,

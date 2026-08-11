@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { useProducts } from "../../../context/ProductsContext";
 import { useCatalog } from "../../../context/CatalogContext";
+import { useInventory } from "../../../context/InventoryContext";
 import Toast from "../../../components/Toast/Toast";
 
 import {
@@ -25,6 +26,12 @@ const initialFormState = {
     image: "",
     stock: true,
     customizable: true,
+
+    // Receta: qué insumos del Inventario consume UNA unidad de este
+    // producto al venderse, y cuánto de cada uno. Es la misma para
+    // cualquier variante que elija el cliente (leche/sabor/etc no la
+    // cambian) — mantenerlo simple a propósito.
+    recipe: [],
 
     options: {
         coffee: [],
@@ -54,6 +61,7 @@ function buildFormFromProduct(product) {
         image: product.image || "",
         stock: product.stock ?? true,
         customizable: product.customizable ?? true,
+        recipe: product.recipe || [],
         options: {
             coffee: product.options?.coffee || [],
             infusionType: product.options?.infusionType || "",
@@ -77,6 +85,8 @@ export default function ProductForm({ product = null, onDone = () => {} }) {
     const { addProduct, updateProduct } = useProducts();
 
     const { catalog } = useCatalog();
+
+    const { inventory } = useInventory();
 
     const { coffeeOptions, infusionOptions, milks, extras, flavorGroups } = catalog;
 
@@ -152,6 +162,38 @@ export default function ProductForm({ product = null, onDone = () => {} }) {
         };
 
         reader.readAsDataURL(file);
+    };
+
+    const addRecipeLine = () => {
+
+        setForm(prev => ({
+            ...prev,
+            recipe: [
+                ...prev.recipe,
+                { inventoryItemId: inventory[0]?.id || "", amount: "" },
+            ],
+        }));
+
+    };
+
+    const updateRecipeLine = (index, field, value) => {
+
+        setForm(prev => ({
+            ...prev,
+            recipe: prev.recipe.map((line, i) =>
+                i === index ? { ...line, [field]: value } : line
+            ),
+        }));
+
+    };
+
+    const removeRecipeLine = (index) => {
+
+        setForm(prev => ({
+            ...prev,
+            recipe: prev.recipe.filter((_, i) => i !== index),
+        }));
+
     };
 
     const handleInfusionTypeChange = (e) => {
@@ -246,6 +288,13 @@ export default function ProductForm({ product = null, onDone = () => {} }) {
             return;
         }
 
+        const cleanRecipe = form.recipe
+            .filter(line => line.inventoryItemId && Number(line.amount) > 0)
+            .map(line => ({
+                inventoryItemId: Number(line.inventoryItemId),
+                amount: Number(line.amount),
+            }));
+
         const productData = {
             title: form.title.trim(),
             description: form.description.trim(),
@@ -255,6 +304,7 @@ export default function ProductForm({ product = null, onDone = () => {} }) {
             image: form.image,
             stock: form.stock,
             customizable: form.customizable,
+            recipe: cleanRecipe,
             options: form.options,
         };
 
@@ -581,6 +631,83 @@ export default function ProductForm({ product = null, onDone = () => {} }) {
                             ))}
                         </div>
                     </div>
+                )}
+
+            </div>
+
+            {/* Receta — qué insumos del Inventario consume este producto
+                por unidad vendida. Se aplica sin importar el productType,
+                por eso va fuera del grid de "Opciones". */}
+            <div className="product-form__block product-form__recipe">
+
+                <h3 className="product-form__subtitle">
+                    Receta (descuenta del inventario al venderse)
+                </h3>
+
+                {inventory.length === 0 ? (
+                    <p className="product-form__hint">
+                        Todavía no tienes insumos en Inventario. Agrega
+                        alguno ahí primero para poder ligarlo aquí.
+                    </p>
+                ) : (
+                    <>
+                        {form.recipe.map((line, index) => {
+
+                            const selectedItem = inventory.find(
+                                i => i.id === Number(line.inventoryItemId)
+                            );
+
+                            return (
+                                <div key={index} className="product-form__recipe-row">
+
+                                    <select
+                                        value={line.inventoryItemId}
+                                        onChange={(e) =>
+                                            updateRecipeLine(index, "inventoryItemId", e.target.value)
+                                        }
+                                    >
+                                        {inventory.map(item => (
+                                            <option key={item.id} value={item.id}>
+                                                {item.name}
+                                            </option>
+                                        ))}
+                                    </select>
+
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        value={line.amount}
+                                        onChange={(e) =>
+                                            updateRecipeLine(index, "amount", e.target.value)
+                                        }
+                                        placeholder="Cantidad"
+                                    />
+
+                                    <span className="product-form__recipe-unit">
+                                        {selectedItem?.unit}
+                                    </span>
+
+                                    <button
+                                        type="button"
+                                        className="product-form__recipe-remove"
+                                        onClick={() => removeRecipeLine(index)}
+                                    >
+                                        Quitar
+                                    </button>
+
+                                </div>
+                            );
+
+                        })}
+
+                        <button
+                            type="button"
+                            className="product-form__button product-form__button--secondary product-form__recipe-add"
+                            onClick={addRecipeLine}
+                        >
+                            + Agregar insumo a la receta
+                        </button>
+                    </>
                 )}
 
             </div>

@@ -6,6 +6,8 @@ import "./Orders.css";
 import Modal from "../../components/Modal/Modal";
 import Toast from "../../components/Toast/Toast";
 import { useCatalog } from "../../context/CatalogContext";
+import { useProducts } from "../../context/ProductsContext";
+import { useInventory } from "../../context/InventoryContext";
 import { FALLBACK_IMAGE, handleImageError } from "../../utils/fallbackImage";
 
 export default function Orders() {
@@ -19,6 +21,10 @@ export default function Orders() {
     } = useCart();
 
     const { catalog } = useCatalog();
+
+    const { products } = useProducts();
+
+    const { adjustStock } = useInventory();
 
     const extraLabels = Object.fromEntries(
         catalog.extras.map(extra => [extra.id, extra.name])
@@ -35,6 +41,35 @@ export default function Orders() {
 
     const [showConfirm, setShowConfirm] = useState(false);
     const [showToast, setShowToast] = useState(false);
+    const [showPaidToast, setShowPaidToast] = useState(false);
+
+    // Al pagar: por cada producto del carrito, si tiene receta definida,
+    // descuenta del inventario (cantidad de la receta × qty comprada).
+    // Si un producto no tiene receta, o ya no existe (se borró), se
+    // ignora sin tronar — simplemente no descuenta nada por ese item.
+    const handlePay = () => {
+
+        cart.forEach((item) => {
+
+            const product = products.find((p) => p.id === item.id);
+
+            if (!product?.recipe?.length) return;
+
+            product.recipe.forEach((line) => {
+                adjustStock(line.inventoryItemId, -(line.amount * item.qty));
+            });
+
+        });
+
+        clearCart();
+
+        setShowPaidToast(true);
+
+        setTimeout(() => {
+            setShowPaidToast(false);
+        }, 1500);
+
+    };
 
     return (
         <>
@@ -171,7 +206,9 @@ export default function Orders() {
                     </div>
 
                     <button className="orders__pay"
-                        disabled={cart.length === 0}>
+                        disabled={cart.length === 0}
+                        onClick={handlePay}
+                    >
                         Pagar
                     </button>
 
@@ -233,6 +270,12 @@ export default function Orders() {
                 message="Pedido eliminado ☕"
                 type="warning"
                 isVisible={showToast}
+            />
+
+            <Toast
+                message="¡Pedido pagado! ☕✅"
+                type="success"
+                isVisible={showPaidToast}
             />
         </>
     );
