@@ -1,19 +1,15 @@
 import { useState } from "react";
 
 import { useProducts } from "../../../context/ProductsContext";
+import { useCatalog } from "../../../context/CatalogContext";
 import Toast from "../../../components/Toast/Toast";
 
 import {
-    coffeeOptions,
-    infusionOptions,
     productTypes,
     menuCategories,
     menuCategoriesByProductType,
     sizes,
-    flavorGroups,
-    milks,
     preparationOptions,
-    extras,
     productTypeConfig,
     defaultProductTypeConfig,
 } from "../../../data/productOptions";
@@ -79,6 +75,10 @@ function buildFormFromProduct(product) {
 export default function ProductForm({ product = null, onDone = () => {} }) {
 
     const { addProduct, updateProduct } = useProducts();
+
+    const { catalog } = useCatalog();
+
+    const { coffeeOptions, infusionOptions, milks, extras, flavorGroups } = catalog;
 
     const isEditing = Boolean(product);
 

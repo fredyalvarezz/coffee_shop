@@ -11,6 +11,7 @@ import Register from "./pages/Register/Register";
 import Admin from "./pages/Admin/Admin";
 import Profile from "./pages/Profile/Profile";
 import { ProductsProvider } from "./context/ProductsContext";
+import { CatalogProvider } from "./context/CatalogContext";
 
 
 function App() {
@@ -18,11 +19,12 @@ function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    
+  
 
       <div className="app">
 
         <ProductsProvider>
+        <CatalogProvider>
 
         <Sidebar
           isOpen={sidebarOpen}
@@ -78,6 +80,7 @@ function App() {
           </main>
 
         </div>
+        </CatalogProvider>
         </ProductsProvider>
       </div>
     

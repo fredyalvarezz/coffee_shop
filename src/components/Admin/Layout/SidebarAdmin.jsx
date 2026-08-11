@@ -4,6 +4,7 @@ import {
     FaChartPie,
     FaCoffee,
     FaBoxes,
+    FaTags,
     FaClipboardList,
     FaUsers,
     FaChartLine,
@@ -48,6 +49,15 @@ export default function SidebarAdmin({
                 >
                     <FaBoxes />
                     Inventario
+                </button>
+
+                <button
+                    className={`sidebar-admin__link ${page === "catalog" ? "active" : ""
+                        }`}
+                    onClick={() => setPage("catalog")}
+                >
+                    <FaTags />
+                    Catálogo
                 </button>
 
                 <button

@@ -5,7 +5,7 @@ import "./Orders.css";
 
 import Modal from "../../components/Modal/Modal";
 import Toast from "../../components/Toast/Toast";
-import { extras as extrasOptions } from "../../data/productOptions";
+import { useCatalog } from "../../context/CatalogContext";
 import { FALLBACK_IMAGE, handleImageError } from "../../utils/fallbackImage";
 
 export default function Orders() {
@@ -18,8 +18,10 @@ export default function Orders() {
         clearCart,
     } = useCart();
 
+    const { catalog } = useCatalog();
+
     const extraLabels = Object.fromEntries(
-        extrasOptions.map(extra => [extra.id, extra.name])
+        catalog.extras.map(extra => [extra.id, extra.name])
     );
 
     const getExtras = (extras) => {

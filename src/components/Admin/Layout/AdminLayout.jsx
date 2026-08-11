@@ -8,6 +8,7 @@ import AdminHeader from "./AdminHeader";
 import Dashboard from "../Dashboard/Dashboard";
 import Products from "../Products/Products";
 import Inventory from "../Inventory/Inventory";
+import Catalog from "../Catalog/Catalog";
 import Orders from "../Orders/Orders";
 import Users from "../Users/Users";
 import Reports from "../Reports/Reports";
@@ -70,6 +71,8 @@ export default function AdminLayout() {
                     )}
 
                     {page === "inventory" && <Inventory />}
+
+                    {page === "catalog" && <Catalog />}
 
                     {page === "orders" && <Orders />}
 
