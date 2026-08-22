@@ -17,6 +17,17 @@ import {
 
 import "./ProductForm.css";
 
+// Grupos del catálogo que una línea de receta "según elección del
+// cliente" puede referenciar. La categoría (key) tiene que coincidir
+// con las que usa CatalogContext en inventoryLinks, y con el campo del
+// carrito que se resuelve en Orders.jsx al pagar.
+const RECIPE_GROUPS = [
+    { key: "milks", label: "Leche que elija el cliente" },
+    { key: "coffeeOptions", label: "Tipo de café que elija el cliente" },
+    { key: "infusionOptions", label: "Infusión que elija el cliente" },
+    { key: "flavors", label: "Sabor que elija el cliente" },
+];
+
 const initialFormState = {
     title: "",
     description: "",
@@ -61,7 +72,10 @@ function buildFormFromProduct(product) {
         image: product.image || "",
         stock: product.stock ?? true,
         customizable: product.customizable ?? true,
-        recipe: product.recipe || [],
+        recipe: (product.recipe || []).map(line => ({
+            ...line,
+            type: line.type || "fixed",
+        })),
         options: {
             coffee: product.options?.coffee || [],
             infusionType: product.options?.infusionType || "",
@@ -170,7 +184,12 @@ export default function ProductForm({ product = null, onDone = () => {} }) {
             ...prev,
             recipe: [
                 ...prev.recipe,
-                { inventoryItemId: inventory[0]?.id || "", amount: "" },
+                {
+                    type: "fixed",
+                    inventoryItemId: inventory[0]?.id || "",
+                    group: "",
+                    amount: "",
+                },
             ],
         }));
 
@@ -289,11 +308,24 @@ export default function ProductForm({ product = null, onDone = () => {} }) {
         }
 
         const cleanRecipe = form.recipe
-            .filter(line => line.inventoryItemId && Number(line.amount) > 0)
-            .map(line => ({
-                inventoryItemId: Number(line.inventoryItemId),
-                amount: Number(line.amount),
-            }));
+            .filter(line => {
+                if (Number(line.amount) <= 0) return false;
+                return line.type === "variable"
+                    ? Boolean(line.group)
+                    : Boolean(line.inventoryItemId);
+            })
+            .map(line => line.type === "variable"
+                ? {
+                    type: "variable",
+                    group: line.group,
+                    amount: Number(line.amount),
+                }
+                : {
+                    type: "fixed",
+                    inventoryItemId: Number(line.inventoryItemId),
+                    amount: Number(line.amount),
+                }
+            );
 
         const productData = {
             title: form.title.trim(),
@@ -657,21 +689,62 @@ export default function ProductForm({ product = null, onDone = () => {} }) {
                                 i => i.id === Number(line.inventoryItemId)
                             );
 
+                            const groupValues = line.group === "flavors"
+                                ? Object.values(catalog.flavorGroups).flat()
+                                : catalog[line.group] || [];
+
+                            const groupLinks = catalog.inventoryLinks?.[line.group] || {};
+
+                            const unlinkedValues = line.type === "variable" && line.group
+                                ? groupValues.filter(v => !groupLinks[v])
+                                : [];
+
                             return (
-                                <div key={index} className="product-form__recipe-row">
+                                <div key={index} className="product-form__recipe-item">
+
+                                <div className="product-form__recipe-row">
 
                                     <select
-                                        value={line.inventoryItemId}
+                                        className="product-form__recipe-type"
+                                        value={line.type}
                                         onChange={(e) =>
-                                            updateRecipeLine(index, "inventoryItemId", e.target.value)
+                                            updateRecipeLine(index, "type", e.target.value)
                                         }
                                     >
-                                        {inventory.map(item => (
-                                            <option key={item.id} value={item.id}>
-                                                {item.name}
-                                            </option>
-                                        ))}
+                                        <option value="fixed">Insumo fijo</option>
+                                        <option value="variable">Según elección del cliente</option>
                                     </select>
+
+                                    {line.type === "variable" ? (
+                                        <select
+                                            value={line.group}
+                                            onChange={(e) =>
+                                                updateRecipeLine(index, "group", e.target.value)
+                                            }
+                                        >
+                                            <option value="" disabled>
+                                                Selecciona qué elección...
+                                            </option>
+                                            {RECIPE_GROUPS.map(g => (
+                                                <option key={g.key} value={g.key}>
+                                                    {g.label}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    ) : (
+                                        <select
+                                            value={line.inventoryItemId}
+                                            onChange={(e) =>
+                                                updateRecipeLine(index, "inventoryItemId", e.target.value)
+                                            }
+                                        >
+                                            {inventory.map(item => (
+                                                <option key={item.id} value={item.id}>
+                                                    {item.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    )}
 
                                     <input
                                         type="number"
@@ -684,7 +757,7 @@ export default function ProductForm({ product = null, onDone = () => {} }) {
                                     />
 
                                     <span className="product-form__recipe-unit">
-                                        {selectedItem?.unit}
+                                        {line.type === "fixed" ? selectedItem?.unit : "según insumo vinculado"}
                                     </span>
 
                                     <button
@@ -694,6 +767,15 @@ export default function ProductForm({ product = null, onDone = () => {} }) {
                                     >
                                         Quitar
                                     </button>
+
+                                </div>
+
+                                {unlinkedValues.length > 0 && (
+                                    <p className="product-form__recipe-warning">
+                                        ⚠ Todavía sin vincular en Catálogo: {unlinkedValues.join(", ")}
+                                        {" "}— si el cliente elige uno de esos, no va a descontar nada.
+                                    </p>
+                                )}
 
                                 </div>
                             );

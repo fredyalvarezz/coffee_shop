@@ -203,26 +203,37 @@
   display: flex;
   flex-direction: column;
   gap: .75rem;
+  overflow: hidden;
 }
 
 .product-form__recipe-row {
   display: grid;
-  grid-template-columns: 1fr 100px 60px auto;
+  grid-template-columns: minmax(0, 130px) minmax(0, 1fr) minmax(0, 90px) minmax(0, 120px) auto;
   gap: .5rem;
   align-items: center;
 }
 
 .product-form__recipe-row select,
 .product-form__recipe-row input {
-  padding: .6rem .75rem;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: .6rem .5rem;
   border: 1px solid #d6d6d6;
   border-radius: 8px;
-  font-size: .9rem;
+  font-size: .85rem;
+}
+
+.product-form__recipe-type {
+  font-size: .85rem;
 }
 
 .product-form__recipe-unit {
   color: var(--color-text-soft);
-  font-size: .85rem;
+  font-size: .8rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .product-form__recipe-remove {
@@ -250,6 +261,18 @@
 .product-form__hint {
   color: var(--color-text-soft);
   font-size: .85rem;
+}
+
+.product-form__recipe-item {
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+}
+
+.product-form__recipe-warning {
+  color: var(--color-danger);
+  font-size: .8rem;
+  margin: 0;
 }
 
 @media (max-width: 600px) {

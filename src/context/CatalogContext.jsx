@@ -11,29 +11,54 @@ const STORAGE_KEY = "cafeteria_catalog";
 
 const CatalogContext = createContext(null);
 
+// inventoryLinks: por cada categoría (milks, coffeeOptions, infusionOptions,
+// flavors), un mapa { "nombre del valor": inventoryItemId }. "flavors" es
+// plano (no separado por grupo) — si el mismo nombre de sabor existe en
+// más de un grupo, comparten el mismo insumo vinculado.
+const emptyInventoryLinks = {
+    milks: {},
+    coffeeOptions: {},
+    infusionOptions: {},
+    flavors: {},
+};
+
 function loadInitialCatalog() {
+
+    const defaults = {
+        milks: seedMilks,
+        coffeeOptions: seedCoffeeOptions,
+        infusionOptions: seedInfusionOptions,
+        extras: seedExtras,
+        flavorGroups: seedFlavorGroups,
+        inventoryLinks: emptyInventoryLinks,
+    };
 
     try {
 
         const stored = localStorage.getItem(STORAGE_KEY);
 
         if (stored) {
-            return JSON.parse(stored);
+
+            const parsed = JSON.parse(stored);
+
+            // merge por si el catálogo guardado es de antes de que
+            // existiera inventoryLinks, para no tronar leyendo undefined
+            return {
+                ...defaults,
+                ...parsed,
+                inventoryLinks: {
+                    ...emptyInventoryLinks,
+                    ...(parsed.inventoryLinks || {}),
+                },
+            };
+
         }
 
     } catch (err) {
         console.error("No se pudo leer el catálogo guardado:", err);
     }
 
-    // Primera vez que se abre la app: arranca con lo que ya tenías
-    // escrito en productOptions.js
-    return {
-        milks: seedMilks,
-        coffeeOptions: seedCoffeeOptions,
-        infusionOptions: seedInfusionOptions,
-        extras: seedExtras,
-        flavorGroups: seedFlavorGroups,
-    };
+    return defaults;
 
 }
 
@@ -94,7 +119,16 @@ export function CatalogProvider({ children }) {
 
             return {
                 ...prev,
-                extras: [...prev.extras, { id, name, price: Number(extra.price) || 0 }],
+                extras: [...prev.extras, {
+                    id,
+                    name,
+                    price: Number(extra.price) || 0,
+                    // Insumo que consume este extra al elegirse, y cuánto.
+                    // Ambos opcionales — si se dejan vacíos, el extra no
+                    // descuenta nada del inventario (ej. "Splenda").
+                    inventoryItemId: extra.inventoryItemId ? Number(extra.inventoryItemId) : null,
+                    amount: extra.amount ? Number(extra.amount) : 0,
+                }],
             };
 
         });
@@ -172,6 +206,25 @@ export function CatalogProvider({ children }) {
 
     };
 
+    // --- Vínculo entre un valor del catálogo y un insumo del Inventario ---
+    // category: "milks" | "coffeeOptions" | "infusionOptions" | "flavors"
+    // value: el nombre tal cual aparece en el catálogo (ej. "Avena")
+    // inventoryItemId: id del insumo en Inventory, o "" / null para quitar
+    const setInventoryLink = (category, value, inventoryItemId) => {
+
+        setCatalog(prev => ({
+            ...prev,
+            inventoryLinks: {
+                ...prev.inventoryLinks,
+                [category]: {
+                    ...prev.inventoryLinks[category],
+                    [value]: inventoryItemId ? Number(inventoryItemId) : null,
+                },
+            },
+        }));
+
+    };
+
     return (
         <CatalogContext.Provider
             value={{
@@ -184,6 +237,7 @@ export function CatalogProvider({ children }) {
                 addFlavor,
                 removeFlavor,
                 addFlavorGroup,
+                setInventoryLink,
             }}
         >
             {children}

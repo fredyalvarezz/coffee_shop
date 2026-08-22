@@ -43,21 +43,71 @@ export default function Orders() {
     const [showToast, setShowToast] = useState(false);
     const [showPaidToast, setShowPaidToast] = useState(false);
 
+    // Para un renglón de receta "variable", averigua qué valor eligió el
+    // cliente para ese grupo (leche, café, infusión o sabor) y lo busca
+    // en los vínculos del Catálogo para saber a qué insumo corresponde.
+    const resolveVariableInventoryId = (group, item) => {
+
+        const chosenValue =
+            group === "milks" ? item.milk
+            : group === "coffeeOptions" ? item.coffee
+            : group === "infusionOptions" ? item.infusion
+            : group === "flavors" ? item.flavor
+            : null;
+
+        if (!chosenValue) return null;
+
+        return catalog.inventoryLinks?.[group]?.[chosenValue] || null;
+
+    };
+
     // Al pagar: por cada producto del carrito, si tiene receta definida,
     // descuenta del inventario (cantidad de la receta × qty comprada).
-    // Si un producto no tiene receta, o ya no existe (se borró), se
-    // ignora sin tronar — simplemente no descuenta nada por ese item.
+    // Los renglones "variables" se resuelven según lo que el cliente
+    // eligió; si esa elección no está vinculada a ningún insumo todavía
+    // (el admin no lo configuró en Catálogo), simplemente no descuenta
+    // nada por ese renglón — no truena.
     const handlePay = () => {
 
         cart.forEach((item) => {
 
             const product = products.find((p) => p.id === item.id);
 
-            if (!product?.recipe?.length) return;
+            // Receta del producto (leche fija o según elección, etc.)
+            if (product?.recipe?.length) {
 
-            product.recipe.forEach((line) => {
-                adjustStock(line.inventoryItemId, -(line.amount * item.qty));
-            });
+                product.recipe.forEach((line) => {
+
+                    const inventoryItemId = line.type === "variable"
+                        ? resolveVariableInventoryId(line.group, item)
+                        : line.inventoryItemId;
+
+                    if (!inventoryItemId) return;
+
+                    adjustStock(inventoryItemId, -(line.amount * item.qty));
+
+                });
+
+            }
+
+            // Extras elegidos en este item — cada uno puede tener su
+            // propio insumo/cantidad vinculado en Catálogo, sin importar
+            // a qué producto se le agregó.
+            if (item.extras) {
+
+                Object.entries(item.extras).forEach(([extraId, selected]) => {
+
+                    if (!selected) return;
+
+                    const extraDef = catalog.extras.find(e => e.id === extraId);
+
+                    if (!extraDef?.inventoryItemId || !extraDef.amount) return;
+
+                    adjustStock(extraDef.inventoryItemId, -(extraDef.amount * item.qty));
+
+                });
+
+            }
 
         });
 

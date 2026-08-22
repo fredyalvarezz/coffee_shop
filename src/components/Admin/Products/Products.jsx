@@ -4,6 +4,9 @@ import { useState } from "react";
 
 import ProductCard from "./ProductCard";
 import { useAdmin } from "../../../context/AdminContext";
+import { useCatalog } from "../../../context/CatalogContext";
+import { useInventory } from "../../../context/InventoryContext";
+import { hasRecipeWarnings } from "../../../utils/recipeWarnings";
 import Modal from "../../../components/Modal/Modal";
 import Toast from "../../../components/Toast/Toast";
 import {
@@ -16,6 +19,10 @@ import {
 export default function Products({ onNewProduct, onEditProduct }) {
 
   const { products, deleteProduct } = useAdmin();
+
+  const { catalog } = useCatalog();
+
+  const { inventory } = useInventory();
 
   const menuCategories = [
     "Todas",
@@ -125,6 +132,7 @@ export default function Products({ onNewProduct, onEditProduct }) {
           <ProductCard
             key={product.id}
             product={product}
+            hasWarning={hasRecipeWarnings(product, catalog, inventory)}
             onEdit={() => onEditProduct(product)}
             onDelete={() => setProductToDelete(product)}
           />

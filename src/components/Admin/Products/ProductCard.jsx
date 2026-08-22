@@ -1,7 +1,7 @@
 import "./ProductCard.css";
 import { FALLBACK_IMAGE, handleImageError } from "../../../utils/fallbackImage";
 
-export default function ProductCard({ product, onEdit, onDelete }) {
+export default function ProductCard({ product, hasWarning, onEdit, onDelete }) {
 
     return (
 
@@ -37,6 +37,12 @@ export default function ProductCard({ product, onEdit, onDelete }) {
                     {product.stock ? "Disponible" : "Agotado"}
 
                 </span>
+
+                {hasWarning && (
+                    <span className="product-card__stock product-card__stock--off">
+                        ⚠ Receta incompleta
+                    </span>
+                )}
 
                 <div className="product-card__actions">
 
