@@ -1,14 +1,12 @@
 import {
   createContext,
   useContext,
-  useState,
 } from "react";
 
 import { useProducts } from "./ProductsContext";
 import { useInventory } from "./InventoryContext";
-
-import usersData from "../data/users";
-import ordersData from "../data/orders";
+import { useOrders } from "./OrdersContext";
+import { useUsers } from "./UsersContext";
 
 const AdminContext = createContext();
 
@@ -16,25 +14,36 @@ export const useAdmin = () => useContext(AdminContext);
 
 export function AdminProvider({ children }) {
 
-  // products viene de ProductsContext, inventory viene de InventoryContext.
-  // Ninguno de los dos vive aquí directamente — así evitamos tener dos
+  // products, inventory, orders y users vienen cada uno de su propio
+  // contexto — ninguno vive aquí directamente. Así se evita tener
   // copias distintas de la misma información en la app.
   //
   // IMPORTANTE: por esto, <AdminProvider> debe quedar DENTRO de
-  // <ProductsProvider> Y de <InventoryProvider> en el árbol.
+  // <ProductsProvider>, <InventoryProvider>, <OrdersProvider> Y
+  // <UsersProvider> en el árbol.
   const { products, addProduct, updateProduct, deleteProduct } = useProducts();
 
   const {
     inventory,
-    addItem: addInventoryItem,
-    updateItem: updateInventoryItem,
-    deleteItem: deleteInventoryItem,
+    addInventoryItem,
+    updateInventoryItem,
+    deleteInventoryItem,
     adjustStock,
   } = useInventory();
 
-  const [users, setUsers] = useState(usersData);
+  const {
+    orders,
+    addOrder,
+    updateOrderStatus,
+    updatePaymentStatus,
+  } = useOrders();
 
-  const [orders, setOrders] = useState(ordersData);
+  const {
+    users,
+    registerUser,
+    updateUser,
+    deleteUser,
+  } = useUsers();
 
   return (
     <AdminContext.Provider
@@ -50,11 +59,15 @@ export function AdminProvider({ children }) {
         deleteInventoryItem,
         adjustStock,
 
-        users,
-        setUsers,
-
         orders,
-        setOrders,
+        addOrder,
+        updateOrderStatus,
+        updatePaymentStatus,
+
+        users,
+        registerUser,
+        updateUser,
+        deleteUser,
       }}
     >
       {children}

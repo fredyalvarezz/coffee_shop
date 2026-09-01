@@ -27,13 +27,16 @@ export default function Dashboard() {
         0
     );
 
+    // La fecha de hoy en formato "YYYY-MM-DD", para comparar contra
+    // order.createdAt. Soporta tanto pedidos reales (fecha completa
+    // ISO, ej. "2026-08-24T15:30:00.000Z") como los de la semilla
+    // (solo fecha, ej. "2026-07-13") — ambos comparten ese prefijo.
+    const todayKey = new Date().toISOString().slice(0, 10);
 
-    /* const today = "2026-07-14";
- 
-     const salesToday = orders
-         .filter(order => order.createdAt === today)
-         .reduce((sum, order) => sum + order.total, 0);
- */
+    const salesToday = orders
+        .filter(order => String(order.createdAt).slice(0, 10) === todayKey)
+        .reduce((sum, order) => sum + order.total, 0);
+
     return (
 
         <section className="dashboard">
@@ -79,15 +82,11 @@ export default function Dashboard() {
                     icon={<FaDollarSign />}
                 />
 
-                {/*  <StatsCard
-               
-               title="Ventas de hoy"
+                <StatsCard
+                    title="Ventas de hoy"
                     value={`$${salesToday}`}
                     icon={<FaDollarSign />}
                 />
-                */}
-
-
 
             </div>
 

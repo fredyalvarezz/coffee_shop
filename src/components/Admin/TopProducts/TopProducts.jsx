@@ -1,66 +1,82 @@
 import "./TopProducts.css";
 
-import products from "../../../data/products";
-import orders from "../../../data/orders";
+import { useAdmin } from "../../../context/AdminContext";
 
 export default function TopProducts() {
 
-    const sales = {};
+    const { orders } = useAdmin();
 
-    orders.forEach((order) => {
+    const counts = {};
 
-        order.items.forEach((item) => {
+    orders.forEach(order => {
 
-            sales[item.productId] =
-                (sales[item.productId] || 0) + item.quantity;
+        (order.items || []).forEach(item => {
+
+            // Usamos el título guardado en el pedido (no el producto
+            // actual) — así, aunque el producto se edite o se borre
+            // después, el conteo histórico sigue siendo correcto.
+            const key = item.title || `Producto #${item.productId}`;
+
+            counts[key] = (counts[key] || 0) + (item.quantity || 0);
 
         });
 
     });
 
-    const ranking = products
-        .map((product) => ({
-            ...product,
-            sold: sales[product.id] || 0,
-        }))
-        .sort((a, b) => b.sold - a.sold)
+    const topFive = Object.entries(counts)
+        .sort((a, b) => b[1] - a[1])
         .slice(0, 5);
 
+    const maxCount = topFive.length > 0 ? topFive[0][1] : 1;
+
     return (
+        <div className="top-products">
 
-        <section className="top-products">
+            <h3>Productos más vendidos</h3>
 
-            <h2>
+            {topFive.length === 0 ? (
+                <p className="top-products__empty">
+                    Todavía no hay ventas registradas.
+                </p>
+            ) : (
+                <div className="top-products__list">
 
-                Productos más vendidos
+                    {topFive.map(([title, qty], index) => (
 
-            </h2>
+                        <div key={title} className="top-products__row">
 
-            {ranking.map((product) => (
+                            <span className="top-products__rank">
+                                {index + 1}
+                            </span>
 
-                <div
-                    key={product.id}
-                    className="top-products__item"
-                >
+                            <div className="top-products__info">
 
-                    <span>
+                                <div className="top-products__row-header">
+                                    <span className="top-products__name">
+                                        {title}
+                                    </span>
+                                    <span className="top-products__qty">
+                                        {qty} {qty === 1 ? "unidad" : "unidades"}
+                                    </span>
+                                </div>
 
-                        {product.title}
+                                <div className="top-products__bar-track">
+                                    <div
+                                        className="top-products__bar-fill"
+                                        style={{ width: `${(qty / maxCount) * 100}%` }}
+                                    />
+                                </div>
 
-                    </span>
+                            </div>
 
-                    <strong>
+                        </div>
 
-                        {product.sold} ventas
-
-                    </strong>
+                    ))}
 
                 </div>
+            )}
 
-            ))}
-
-        </section>
-
+        </div>
     );
 
 }

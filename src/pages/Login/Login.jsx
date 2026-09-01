@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import coffeeImage from "../../assets/images/coffeeImage.png";
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
+import { useUsers } from "../../context/UsersContext";
 import { useNavigate } from "react-router-dom";
 import eyeIcon from "../../assets/icons/eye.png";
 import eyeOffIcon from "../../assets/icons/eye-off.png";
@@ -13,22 +14,29 @@ export default function Login() {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
 
     const { login } = useAuth();
+    const { authenticate } = useUsers();
     const navigate = useNavigate();
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        login({
-            id: 1,
-            name: "Fredy",
-            email,
-            role: "admin",
-        });
+        setError("");
+
+        const foundUser = authenticate(email, password);
+
+        if (!foundUser) {
+            setError("Correo o contraseña incorrectos.");
+            return;
+        }
+
+        login(foundUser);
 
         navigate("/");
     };
+
     return (
         <div className="login">
 
@@ -83,6 +91,13 @@ export default function Login() {
                             </button>
 
                         </div>
+
+                        {error && (
+                            <p className="login__error">
+                                {error}
+                            </p>
+                        )}
+
                         <button
                             type="submit"
                             className="login__button"
@@ -105,4 +120,4 @@ export default function Login() {
 
         </div >
     );
-} 
+}

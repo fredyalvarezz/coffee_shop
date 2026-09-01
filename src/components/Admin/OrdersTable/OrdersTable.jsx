@@ -1,34 +1,25 @@
 import "./OrdersTable.css";
 
-const orders = [
-    {
-        id: 145,
-        customer: "Fredy Alvarez",
-        total: "$185",
-        status: "Preparando",
-    },
-    {
-        id: 144,
-        customer: "Adan Iwaya",
-        total: "$95",
-        status: "Entregado",
-    },
-    {
-        id: 143,
-        customer: "Sergey Nugget",
-        total: "$210",
-        status: "Cancelado",
-    },
-    {
-        id: 142,
-        customer: "Ana Lopez",
-        total: "$140",
-        status: "Pendiente",
-    },
+import { useAdmin } from "../../../context/AdminContext";
 
-];
+// Traduce el status real (en inglés, para que combine con AdminOrders.jsx)
+// al texto y a la clase CSS en español que ya tenías armados aquí.
+const STATUS_STYLE = {
+    pending: { label: "Pendiente", className: "pendiente" },
+    preparing: { label: "Preparando", className: "preparando" },
+    completed: { label: "Completado", className: "entregado" },
+    cancelled: { label: "Cancelado", className: "cancelado" },
+};
 
 export default function OrdersTable() {
+
+    const { orders } = useAdmin();
+
+    // orders ya viene con el más reciente primero (así lo guarda
+    // OrdersContext), así que solo tomamos los primeros 5 para el
+    // resumen del dashboard.
+    const latestOrders = orders.slice(0, 5);
+
     return (
 
         <section className="orders-table">
@@ -48,26 +39,43 @@ export default function OrdersTable() {
                 </thead>
 
                 <tbody>
-                    
-                    {orders.map((order) => (
-                        <tr key={order.id}>
 
-                            <td>#{order.id}</td>
-
-                            <td>{order.customer}</td>
-
-                            <td>{order.total}</td>
-
-                            <td>
-                                <span
-                                    className={`orders-table__status orders-table__status--${order.status.toLowerCase()}`}
-                                >
-                                    {order.status}
-                                </span>
+                    {latestOrders.length === 0 && (
+                        <tr>
+                            <td colSpan={4}>
+                                Todavía no hay pedidos.
                             </td>
-
                         </tr>
-                    ))}
+                    )}
+
+                    {latestOrders.map((order) => {
+
+                        const style = STATUS_STYLE[order.status] || {
+                            label: order.status,
+                            className: "pendiente",
+                        };
+
+                        return (
+                            <tr key={order.id}>
+
+                                <td>#{order.id}</td>
+
+                                <td>{order.customer || "Invitado"}</td>
+
+                                <td>${order.total}</td>
+
+                                <td>
+                                    <span
+                                        className={`orders-table__status orders-table__status--${style.className}`}
+                                    >
+                                        {style.label}
+                                    </span>
+                                </td>
+
+                            </tr>
+                        );
+
+                    })}
 
                 </tbody>
             </table>

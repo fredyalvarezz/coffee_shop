@@ -1,49 +1,92 @@
 import "./SalesChart.css";
 
-import sales from "../../../data/sales";
+import { useAdmin } from "../../../context/AdminContext";
 
-import {
-  ResponsiveContainer,
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-} from "recharts";
+const WEEKDAY_LABELS = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+
+function getLastNDays(n) {
+
+    const days = [];
+
+    for (let i = n - 1; i >= 0; i--) {
+
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+
+        days.push(date);
+
+    }
+
+    return days;
+
+}
+
+function toDateKey(date) {
+    return date.toISOString().slice(0, 10); // "YYYY-MM-DD"
+}
+
+// order.createdAt puede ser una fecha completa ISO (pedidos reales) o
+// solo "YYYY-MM-DD" (pedidos de la semilla) — ambos comparten el
+// mismo prefijo de 10 caracteres, así que comparar así funciona para
+// los dos casos sin distinguirlos.
+function orderDateKey(order) {
+    return String(order.createdAt).slice(0, 10);
+}
 
 export default function SalesChart() {
-  return (
-    <section className="sales-chart">
 
-      <h2 className="sales-chart__title">
-        Ventas de la semana
-      </h2>
+    const { orders } = useAdmin();
 
-      <ResponsiveContainer width="100%" height={320}>
+    const days = getLastNDays(7);
 
-        <AreaChart data={sales}>
+    const salesByDay = days.map(date => {
 
-          <CartesianGrid strokeDasharray="3 3" />
+        const key = toDateKey(date);
 
-          <XAxis dataKey="day" />
+        const total = orders
+            .filter(order => orderDateKey(order) === key)
+            .reduce((sum, order) => sum + order.total, 0);
 
-          <YAxis />
+        return { key, date, total };
 
-          <Tooltip />
+    });
 
-          <Area
-            type="monotone"
-            dataKey="total"
-            stroke="#5FA3A3"
-            fill="#5FA3A3"
-            fillOpacity={0.25}
-          />
+    const maxTotal = Math.max(...salesByDay.map(d => d.total), 1);
 
-        </AreaChart>
+    return (
+        <div className="sales-chart">
 
-      </ResponsiveContainer>
+            <h3>Ventas de los últimos 7 días</h3>
 
-    </section>
-  );
+            <div className="sales-chart__bars">
+
+                {salesByDay.map(({ key, date, total }) => (
+
+                    <div key={key} className="sales-chart__bar-wrap">
+
+                        <span className="sales-chart__value">
+                            {total > 0 ? `$${total}` : ""}
+                        </span>
+
+                        <div className="sales-chart__track">
+                            <div
+                                className="sales-chart__bar"
+                                style={{ height: `${(total / maxTotal) * 100}%` }}
+                                title={`$${total}`}
+                            />
+                        </div>
+
+                        <span className="sales-chart__label">
+                            {WEEKDAY_LABELS[date.getDay()]}
+                        </span>
+
+                    </div>
+
+                ))}
+
+            </div>
+
+        </div>
+    );
+
 }

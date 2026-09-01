@@ -8,6 +8,8 @@ import Toast from "../../components/Toast/Toast";
 import { useCatalog } from "../../context/CatalogContext";
 import { useProducts } from "../../context/ProductsContext";
 import { useInventory } from "../../context/InventoryContext";
+import { useOrders } from "../../context/OrdersContext";
+import { useAuth } from "../../context/AuthContext";
 import { FALLBACK_IMAGE, handleImageError } from "../../utils/fallbackImage";
 
 export default function Orders() {
@@ -24,7 +26,17 @@ export default function Orders() {
 
     const { products } = useProducts();
 
-    const { adjustStock } = useInventory();
+    // IMPORTANTE:
+    // Ahora necesitamos inventory además de adjustStock,
+    // porque primero vamos a comprobar si hay suficiente stock.
+    const {
+        inventory,
+        adjustStock,
+    } = useInventory();
+
+    const { addOrder } = useOrders();
+
+    const { user } = useAuth();
 
     const extraLabels = Object.fromEntries(
         catalog.extras.map(extra => [extra.id, extra.name])
@@ -32,9 +44,10 @@ export default function Orders() {
 
     const getExtras = (extras) => {
 
-        return Object.entries(extras)
+        return Object.entries(extras || {})
             .filter(([key, value]) => value)
             .map(([key]) => extraLabels[key])
+            .filter(Boolean)
             .join(", ");
 
     };
@@ -42,18 +55,25 @@ export default function Orders() {
     const [showConfirm, setShowConfirm] = useState(false);
     const [showToast, setShowToast] = useState(false);
     const [showPaidToast, setShowPaidToast] = useState(false);
+    const [showStockToast, setShowStockToast] = useState(false);
+    const [stockError, setStockError] = useState("");
 
-    // Para un renglón de receta "variable", averigua qué valor eligió el
-    // cliente para ese grupo (leche, café, infusión o sabor) y lo busca
-    // en los vínculos del Catálogo para saber a qué insumo corresponde.
+    /*
+     * Para una receta variable, averigua qué valor eligió el cliente
+     * y busca el insumo correspondiente en Catalog.
+     */
     const resolveVariableInventoryId = (group, item) => {
 
         const chosenValue =
-            group === "milks" ? item.milk
-            : group === "coffeeOptions" ? item.coffee
-            : group === "infusionOptions" ? item.infusion
-            : group === "flavors" ? item.flavor
-            : null;
+            group === "milks"
+                ? item.milk
+                : group === "coffeeOptions"
+                    ? item.coffee
+                    : group === "infusionOptions"
+                        ? item.infusion
+                        : group === "flavors"
+                            ? item.flavor
+                            : null;
 
         if (!chosenValue) return null;
 
@@ -61,56 +81,266 @@ export default function Orders() {
 
     };
 
-    // Al pagar: por cada producto del carrito, si tiene receta definida,
-    // descuenta del inventario (cantidad de la receta × qty comprada).
-    // Los renglones "variables" se resuelven según lo que el cliente
-    // eligió; si esa elección no está vinculada a ningún insumo todavía
-    // (el admin no lo configuró en Catálogo), simplemente no descuenta
-    // nada por ese renglón — no truena.
-    const handlePay = () => {
+    /*
+     * Calcula TODOS los insumos que necesita el pedido.
+     *
+     * El resultado tiene esta forma:
+     *
+     * [
+     *   { inventoryItemId: 1, amount: 0.5 },
+     *   { inventoryItemId: 2, amount: 1.2 }
+     * ]
+     *
+     * Si dos productos utilizan el mismo insumo, aquí se acumula
+     * la cantidad para hacer una sola validación.
+     */
+    const calculateRequiredInventory = () => {
+
+        const required = {};
+
+        const addRequiredAmount = (inventoryItemId, amount) => {
+
+            if (!inventoryItemId || amount <= 0) return;
+
+            const id = Number(inventoryItemId);
+
+            required[id] = (required[id] || 0) + amount;
+
+        };
 
         cart.forEach((item) => {
 
-            const product = products.find((p) => p.id === item.id);
+            const product = products.find(
+                product => product.id === item.id
+            );
 
-            // Receta del producto (leche fija o según elección, etc.)
-            if (product?.recipe?.length) {
+            if (!product) return;
+
+            /*
+             * RECETA DEL PRODUCTO
+             */
+            if (product.recipe?.length) {
 
                 product.recipe.forEach((line) => {
 
-                    const inventoryItemId = line.type === "variable"
-                        ? resolveVariableInventoryId(line.group, item)
-                        : line.inventoryItemId;
+                    const inventoryItemId =
+                        line.type === "variable"
+                            ? resolveVariableInventoryId(line.group, item)
+                            : line.inventoryItemId;
 
                     if (!inventoryItemId) return;
 
-                    adjustStock(inventoryItemId, -(line.amount * item.qty));
+                    const amountPerUnit = Number(line.amount) || 0;
+
+                    const totalAmount =
+                        amountPerUnit * item.qty;
+
+                    addRequiredAmount(
+                        inventoryItemId,
+                        totalAmount
+                    );
 
                 });
 
             }
 
-            // Extras elegidos en este item — cada uno puede tener su
-            // propio insumo/cantidad vinculado en Catálogo, sin importar
-            // a qué producto se le agregó.
+            /*
+             * EXTRAS
+             */
             if (item.extras) {
 
-                Object.entries(item.extras).forEach(([extraId, selected]) => {
+                Object.entries(item.extras).forEach(
+                    ([extraId, selected]) => {
 
-                    if (!selected) return;
+                        if (!selected) return;
 
-                    const extraDef = catalog.extras.find(e => e.id === extraId);
+                        const extraDef =
+                            catalog.extras.find(
+                                extra => extra.id === extraId
+                            );
 
-                    if (!extraDef?.inventoryItemId || !extraDef.amount) return;
+                        if (
+                            !extraDef?.inventoryItemId ||
+                            !extraDef?.amount
+                        ) {
+                            return;
+                        }
 
-                    adjustStock(extraDef.inventoryItemId, -(extraDef.amount * item.qty));
+                        const totalAmount =
+                            Number(extraDef.amount) * item.qty;
 
+                        addRequiredAmount(
+                            extraDef.inventoryItemId,
+                            totalAmount
+                        );
+
+                    }
+                );
+
+            }
+
+        });
+
+        return Object.entries(required).map(
+            ([inventoryItemId, amount]) => ({
+                inventoryItemId: Number(inventoryItemId),
+                amount,
+            })
+        );
+
+    };
+
+    /*
+     * Comprueba si TODO el pedido puede salir del inventario.
+     *
+     * IMPORTANTE:
+     * Aquí todavía NO modificamos el inventario.
+     *
+     * Si falta un solo ingrediente, regresamos false.
+     */
+    const validateInventory = (requiredInventory) => {
+
+        const unavailableItems = [];
+
+        requiredInventory.forEach((required) => {
+
+            const inventoryItem = inventory.find(
+                item => item.id === required.inventoryItemId
+            );
+
+            /*
+             * Si la receta apunta a un insumo que ya no existe
+             * en Inventario, tampoco permitimos vender.
+             */
+            if (!inventoryItem) {
+
+                unavailableItems.push({
+                    name: "Insumo no encontrado",
+                    required: required.amount,
+                    available: 0,
+                    unit: "",
+                });
+
+                return;
+
+            }
+
+            if (inventoryItem.stock < required.amount) {
+
+                unavailableItems.push({
+                    name: inventoryItem.name,
+                    required: required.amount,
+                    available: inventoryItem.stock,
+                    unit: inventoryItem.unit,
                 });
 
             }
 
         });
 
+        return unavailableItems;
+
+    };
+
+    /*
+     * PAGO
+     *
+     * Primero calcula.
+     * Después valida.
+     * SOLAMENTE si todo está disponible descuenta el inventario.
+     * Y por último, registra el pedido real para el admin.
+     */
+    const handlePay = () => {
+
+        /*
+         * 1. Calcular todo lo que necesita el pedido.
+         */
+        const requiredInventory =
+            calculateRequiredInventory();
+
+        /*
+         * 2. Comprobar que exista suficiente stock.
+         */
+        const unavailableItems =
+            validateInventory(requiredInventory);
+
+        /*
+         * 3. Si falta algo, NO hacemos ningún descuento ni registramos
+         * el pedido.
+         */
+        if (unavailableItems.length > 0) {
+
+            const message = unavailableItems
+                .map(item => {
+
+                    const required =
+                        Number(item.required).toFixed(3);
+
+                    const available =
+                        Number(item.available).toFixed(3);
+
+                    return `${item.name}: necesitas ${required} ${item.unit}, pero solo hay ${available} ${item.unit}.`;
+
+                })
+                .join(" ");
+
+            setStockError(message);
+            setShowStockToast(true);
+
+            setTimeout(() => {
+                setShowStockToast(false);
+            }, 5000);
+
+            return;
+
+        }
+
+        /*
+         * 4. TODO está disponible.
+         *
+         * Ahora sí hacemos los descuentos.
+         */
+        requiredInventory.forEach((required) => {
+
+            adjustStock(
+                required.inventoryItemId,
+                -required.amount
+            );
+
+        });
+
+        /*
+         * 5. Registrar el pedido real, para que el admin lo vea en
+         * su historial. Guarda una copia de cada item con todas sus
+         * personalizaciones (no solo el id), porque el producto
+         * original se podría editar o borrar después.
+         */
+        addOrder({
+            customer: user?.name || "Invitado",
+            total,
+            status: "pending",
+            paymentStatus: "paid",
+            createdAt: new Date().toISOString(),
+            items: cart.map((item) => ({
+                productId: item.id,
+                title: item.title,
+                image: item.image,
+                quantity: item.qty,
+                price: item.price,
+                size: item.size || null,
+                coffee: item.coffee || null,
+                infusion: item.infusion || null,
+                milk: item.milk || null,
+                flavor: item.flavor || null,
+                preparation: item.preparation || null,
+                extras: item.extras || {},
+                note: item.note || "",
+            })),
+        });
+
+        /*
+         * 6. El pedido se completó correctamente.
+         */
         clearCart();
 
         setShowPaidToast(true);
@@ -133,13 +363,20 @@ export default function Orders() {
 
                     {cart.length === 0 && (
                         <div className="orders__empty">
+
                             <div className="orders__empty-icon">
                                 ☕
                             </div>
-                            <h2> Aún no agregas bebidas </h2>
-                            <p> Explora nuestro menú y encuentra
+
+                            <h2>
+                                Aún no agregas bebidas
+                            </h2>
+
+                            <p>
+                                Explora nuestro menú y encuentra
                                 tu café favorito
                             </p>
+
                         </div>
                     )}
 
@@ -151,7 +388,10 @@ export default function Orders() {
                         >
 
                             <img
-                                src={item.image || FALLBACK_IMAGE}
+                                src={
+                                    item.image ||
+                                    FALLBACK_IMAGE
+                                }
                                 alt={item.title}
                                 className="orders__image"
                                 onError={handleImageError}
@@ -160,33 +400,56 @@ export default function Orders() {
                             <div className="orders__info">
 
                                 <h3>{item.title}</h3>
+
                                 <p>
 
-                                    {item.size && <>Tamaño: {item.size}<br /></>}
+                                    {item.size && (
+                                        <>
+                                            Tamaño: {item.size}
+                                            <br />
+                                        </>
+                                    )}
 
-                                    {item.coffee && <>Café: {item.coffee}<br /></>}
+                                    {item.coffee && (
+                                        <>
+                                            Café: {item.coffee}
+                                            <br />
+                                        </>
+                                    )}
 
-                                    {item.infusion && <>Infusión: {item.infusion}<br /></>}
+                                    {item.infusion && (
+                                        <>
+                                            Infusión: {item.infusion}
+                                            <br />
+                                        </>
+                                    )}
 
-                                    {item.milk && <>Leche: {item.milk}<br /></>}
+                                    {item.milk && (
+                                        <>
+                                            Leche: {item.milk}
+                                            <br />
+                                        </>
+                                    )}
 
-                                    {item.flavor && <>Sabor: {item.flavor}</>}
+                                    {item.flavor && (
+                                        <>
+                                            Sabor: {item.flavor}
+                                        </>
+                                    )}
 
                                 </p>
 
                                 {item.preparation && (
-
                                     <small>
-
-                                        Preparación: {item.preparation}
-
+                                        Preparación:{" "}
+                                        {item.preparation}
                                     </small>
-
                                 )}
 
                                 {getExtras(item.extras) && (
                                     <small>
-                                        Extras: {getExtras(item.extras)}
+                                        Extras:{" "}
+                                        {getExtras(item.extras)}
                                     </small>
                                 )}
 
@@ -205,7 +468,9 @@ export default function Orders() {
                             <div className="orders__qty">
 
                                 <button
-                                    onClick={() => decreaseQty(index)}
+                                    onClick={() =>
+                                        decreaseQty(index)
+                                    }
                                 >
                                     -
                                 </button>
@@ -213,7 +478,9 @@ export default function Orders() {
                                 <span>{item.qty}</span>
 
                                 <button
-                                    onClick={() => increaseQty(index)}
+                                    onClick={() =>
+                                        increaseQty(index)
+                                    }
                                 >
                                     +
                                 </button>
@@ -234,28 +501,44 @@ export default function Orders() {
                     {cart.length > 0 && (
                         <button
                             className="orders__clear"
-                            onClick={() => setShowConfirm(true)}
+                            onClick={() =>
+                                setShowConfirm(true)
+                            }
                         >
                             Eliminar pedido
                         </button>
                     )}
 
                     <div className="orders__row">
+
                         <span>Subtotal</span>
-                        <span>${total}</span>
+
+                        <span>
+                            ${total}
+                        </span>
+
                     </div>
 
                     <div className="orders__row">
+
                         <span>Envío</span>
+
                         <span>$0</span>
+
                     </div>
 
                     <div className="orders__row orders__total">
+
                         <span>Total</span>
-                        <span>${total}</span>
+
+                        <span>
+                            ${total}
+                        </span>
+
                     </div>
 
-                    <button className="orders__pay"
+                    <button
+                        className="orders__pay"
                         disabled={cart.length === 0}
                         onClick={handlePay}
                     >
@@ -270,20 +553,25 @@ export default function Orders() {
             {showConfirm && (
                 <Modal
                     title="Eliminar pedido"
-                    onClose={() => setShowConfirm(false)}
+                    onClose={() =>
+                        setShowConfirm(false)
+                    }
                 >
 
                     <div className="orders__confirm">
 
                         <p>
-                            ¿Seguro que deseas eliminar todos los productos?
+                            ¿Seguro que deseas eliminar todos
+                            los productos?
                         </p>
 
                         <div className="orders__confirm-buttons">
 
                             <button
                                 className="orders__confirm-cancel"
-                                onClick={() => setShowConfirm(false)}
+                                onClick={() =>
+                                    setShowConfirm(false)
+                                }
                             >
                                 Cancelar
                             </button>
@@ -312,21 +600,32 @@ export default function Orders() {
                     </div>
 
                 </Modal>
-            )
-            }
+            )}
 
-            {/* Toast */}
+            {/* Toast: pedido eliminado */}
             <Toast
                 message="Pedido eliminado ☕"
                 type="warning"
                 isVisible={showToast}
             />
 
+            {/* Toast: pago correcto */}
             <Toast
                 message="¡Pedido pagado! ☕✅"
                 type="success"
                 isVisible={showPaidToast}
             />
+
+            {/* Toast: inventario insuficiente */}
+            <Toast
+                message={
+                    stockError ||
+                    "No hay suficiente inventario."
+                }
+                type="warning"
+                isVisible={showStockToast}
+            />
+
         </>
     );
 }

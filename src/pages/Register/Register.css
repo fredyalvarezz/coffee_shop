@@ -156,6 +156,11 @@
     text-decoration: none;
 }
 
+.register__error {
+  color: var(--color-danger, #B85C5C);
+  font-size: 13px;
+  margin: -4px 0 4px;
+}
 @media (max-width: 768px) {
 
     .register__card {

@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { useState } from "react";
 import Sidebar from "./components/Sidebar/Sidebar";
 import Header from "./components/Header/Header";
@@ -13,6 +13,8 @@ import Profile from "./pages/Profile/Profile";
 import { ProductsProvider } from "./context/ProductsContext";
 import { CatalogProvider } from "./context/CatalogContext";
 import { InventoryProvider } from "./context/InventoryContext";
+import { OrdersProvider } from "./context/OrdersContext";
+import { UsersProvider } from "./context/UsersContext";
 
 
 function App() {
@@ -25,6 +27,8 @@ function App() {
       <ProductsProvider>
       <CatalogProvider>
       <InventoryProvider>
+      <OrdersProvider>
+      <UsersProvider>
 
       <Sidebar
         isOpen={sidebarOpen}
@@ -80,6 +84,8 @@ function App() {
         </main>
 
       </div>
+      </UsersProvider>
+      </OrdersProvider>
       </InventoryProvider>
       </CatalogProvider>
       </ProductsProvider>
