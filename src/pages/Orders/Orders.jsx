@@ -316,6 +316,7 @@ export default function Orders() {
          * original se podría editar o borrar después.
          */
         addOrder({
+            userId: user?.id || null,
             customer: user?.name || "Invitado",
             total,
             status: "pending",

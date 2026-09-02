@@ -15,6 +15,7 @@ import { CatalogProvider } from "./context/CatalogContext";
 import { InventoryProvider } from "./context/InventoryContext";
 import { OrdersProvider } from "./context/OrdersContext";
 import { UsersProvider } from "./context/UsersContext";
+import { SettingsProvider } from "./context/SettingsContext";
 
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
       <InventoryProvider>
       <OrdersProvider>
       <UsersProvider>
+      <SettingsProvider>
 
       <Sidebar
         isOpen={sidebarOpen}
@@ -84,6 +86,7 @@ function App() {
         </main>
 
       </div>
+      </SettingsProvider>
       </UsersProvider>
       </OrdersProvider>
       </InventoryProvider>
