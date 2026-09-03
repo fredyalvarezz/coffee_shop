@@ -2,7 +2,7 @@ import "./Sidebar.css";
 import { Link, useLocation } from "react-router-dom";
 import logo from "../../assets/logo.png";
 import { useCart } from "../../context/CartContext";
-
+import { useAuth } from "../../context/AuthContext";
 
 export default function Sidebar({
     isOpen,
@@ -10,6 +10,8 @@ export default function Sidebar({
 }) {
     const location = useLocation();
     const { cart } = useCart();
+
+    const { user } = useAuth();
 
     const totalItems = cart.reduce((acc, item) => acc + item.qty, 0);
 
@@ -20,6 +22,8 @@ export default function Sidebar({
     ) {
         return null;
     }
+
+
 
     return (
         <>
@@ -93,23 +97,25 @@ export default function Sidebar({
                     >
                         Cartera
                     </Link>
-            
-                    <Link
-                        to="/login"
-                        onClick={() => setIsOpen(false)}
-                        className={`sidebar__link ${location.pathname === "/login" ? "active" : ""
-                            }`}
-                    >
-                        Iniciar Sesion
-                    </Link>
-                    <Link
+
+                    {!user && (
+                        <Link
+                            to="/login"
+                            onClick={() => setIsOpen(false)}
+                            className={`sidebar__link ${location.pathname === "/login" ? "active" : ""
+                                }`}
+                        >
+                            Iniciar Sesión
+                        </Link>
+                    )}
+                    {/* <Link
                         to="/register"
                         onClick={() => setIsOpen(false)}
                         className={`sidebar__link ${location.pathname === "/register" ? "active" : ""
                             }`}
                     >
                         Registrarse
-                    </Link>
+                    </Link>*/}
                 </nav>
             </aside>
         </>
