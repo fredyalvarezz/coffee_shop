@@ -6,6 +6,7 @@ import Home from "./pages/Home/Home";
 import Menu from "./pages/Menu/Menu";
 import ProductDetail from "./pages/ProductDetail/ProductDetail";
 import Orders from "./pages/Orders/Orders";
+import Cartera from "./pages/Cartera/Cartera";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
 import Admin from "./pages/Admin/Admin";
@@ -16,7 +17,7 @@ import { InventoryProvider } from "./context/InventoryContext";
 import { OrdersProvider } from "./context/OrdersContext";
 import { UsersProvider } from "./context/UsersContext";
 import { SettingsProvider } from "./context/SettingsContext";
-
+import { WalletProvider } from "./context/WalletContext";
 
 function App() {
 
@@ -31,6 +32,7 @@ function App() {
       <OrdersProvider>
       <UsersProvider>
       <SettingsProvider>
+      <WalletProvider>
 
       <Sidebar
         isOpen={sidebarOpen}
@@ -64,10 +66,18 @@ function App() {
               element={<Orders />}
             />
 
-            <Route path="/login"
+            <Route
+              path="/cartera"
+              element={<Cartera />}
+            />
+
+            <Route
+              path="/login"
               element={<Login />}
             />
-            <Route path="/register"
+
+            <Route
+              path="/register"
               element={<Register />}
             />
 
@@ -82,16 +92,18 @@ function App() {
             />
 
           </Routes>
-
         </main>
 
       </div>
+
+      </WalletProvider>
       </SettingsProvider>
       </UsersProvider>
       </OrdersProvider>
       </InventoryProvider>
       </CatalogProvider>
       </ProductsProvider>
+
     </div>
   );
 }

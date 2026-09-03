@@ -9,6 +9,7 @@ import { useCatalog } from "../../context/CatalogContext";
 import { useProducts } from "../../context/ProductsContext";
 import { useInventory } from "../../context/InventoryContext";
 import { useOrders } from "../../context/OrdersContext";
+import { useWallet } from "../../context/WalletContext";
 import { useAuth } from "../../context/AuthContext";
 import { FALLBACK_IMAGE, handleImageError } from "../../utils/fallbackImage";
 
@@ -36,6 +37,8 @@ export default function Orders() {
 
     const { addOrder } = useOrders();
 
+    const { getBalance, deductFunds } = useWallet();
+
     const { user } = useAuth();
 
     const extraLabels = Object.fromEntries(
@@ -57,6 +60,8 @@ export default function Orders() {
     const [showPaidToast, setShowPaidToast] = useState(false);
     const [showStockToast, setShowStockToast] = useState(false);
     const [stockError, setStockError] = useState("");
+    const [showWalletToast, setShowWalletToast] = useState(false);
+    const [walletError, setWalletError] = useState("");
 
     /*
      * Para una receta variable, averigua qué valor eligió el cliente
@@ -296,6 +301,35 @@ export default function Orders() {
         }
 
         /*
+         * 3.5. Comprobar saldo de la cartera — solo si hay sesión
+         * iniciada. Un invitado sigue pagando como hasta ahora, sin
+         * tocar cartera (no tiene una).
+         */
+        if (user) {
+
+            const balance = getBalance(user.id);
+
+            if (balance < total) {
+
+                const faltante = (total - balance).toFixed(2);
+
+                setWalletError(
+                    `Saldo insuficiente: tienes $${balance.toFixed(2)}, te faltan $${faltante}. Recarga tu cartera para continuar.`
+                );
+
+                setShowWalletToast(true);
+
+                setTimeout(() => {
+                    setShowWalletToast(false);
+                }, 5000);
+
+                return;
+
+            }
+
+        }
+
+        /*
          * 4. TODO está disponible.
          *
          * Ahora sí hacemos los descuentos.
@@ -308,6 +342,16 @@ export default function Orders() {
             );
 
         });
+
+        /*
+         * 4.5. Descontar el pago de la cartera (solo si hay sesión).
+         * Ya validamos arriba que alcanza, así que esto no debería
+         * fallar — pero por seguridad no truena si algo raro pasa,
+         * simplemente no descuenta.
+         */
+        if (user) {
+            deductFunds(user.id, total, "Pago de pedido");
+        }
 
         /*
          * 5. Registrar el pedido real, para que el admin lo vea en
@@ -625,6 +669,16 @@ export default function Orders() {
                 }
                 type="warning"
                 isVisible={showStockToast}
+            />
+
+            {/* Toast: saldo de cartera insuficiente */}
+            <Toast
+                message={
+                    walletError ||
+                    "No tienes saldo suficiente."
+                }
+                type="warning"
+                isVisible={showWalletToast}
             />
 
         </>
