@@ -10,11 +10,9 @@ export default function Sidebar({
 }) {
     const location = useLocation();
     const { cart } = useCart();
-
     const { user } = useAuth();
 
     const totalItems = cart.reduce((acc, item) => acc + item.qty, 0);
-
 
     if (
         location.pathname === "/login" ||
@@ -23,11 +21,8 @@ export default function Sidebar({
         return null;
     }
 
-
-
     return (
         <>
-
             <button
                 className={`sidebar__toggle ${isOpen ? "active" : ""}`}
                 onClick={() => setIsOpen(!isOpen)}
@@ -36,8 +31,6 @@ export default function Sidebar({
                 <span></span>
                 <span></span>
             </button>
-
-
 
             {isOpen && (
                 <div
@@ -48,10 +41,13 @@ export default function Sidebar({
 
             <aside className={`sidebar ${isOpen ? "sidebar--open" : ""}`}>
 
-
                 {/* Logo */}
                 <div className="sidebar__logo">
-                    <img src={logo} alt="logo" className="sidebar__logo-img" />
+                    <img
+                        src={logo}
+                        alt="logo"
+                        className="sidebar__logo-img"
+                    />
                     <h2 className="sidebar__logo-text">Kopi Coffee</h2>
                 </div>
 
@@ -61,8 +57,9 @@ export default function Sidebar({
                     <Link
                         to="/"
                         onClick={() => setIsOpen(false)}
-                        className={`sidebar__link ${location.pathname === "/" ? "active" : ""
-                            }`}
+                        className={`sidebar__link ${
+                            location.pathname === "/" ? "active" : ""
+                        }`}
                     >
                         Inicio
                     </Link>
@@ -70,8 +67,9 @@ export default function Sidebar({
                     <Link
                         to="/menu"
                         onClick={() => setIsOpen(false)}
-                        className={`sidebar__link ${location.pathname === "/menu" ? "active" : ""
-                            }`}
+                        className={`sidebar__link ${
+                            location.pathname === "/menu" ? "active" : ""
+                        }`}
                     >
                         Menú
                     </Link>
@@ -79,46 +77,71 @@ export default function Sidebar({
                     <Link
                         to="/pedidos"
                         onClick={() => setIsOpen(false)}
-                        className={`sidebar__link ${location.pathname === "/pedidos" ? "active" : ""
-                            }`}
+                        className={`sidebar__link ${
+                            location.pathname === "/pedidos" ? "active" : ""
+                        }`}
                     >
                         Pedidos
 
                         {totalItems > 0 && (
-                            <span className="sidebar__badge">{totalItems}</span>
+                            <span className="sidebar__badge">
+                                {totalItems}
+                            </span>
                         )}
                     </Link>
 
                     <Link
                         to="/cartera"
                         onClick={() => setIsOpen(false)}
-                        className={`sidebar__link ${location.pathname === "/cartera" ? "active" : ""
-                            }`}
+                        className={`sidebar__link ${
+                            location.pathname === "/cartera" ? "active" : ""
+                        }`}
                     >
                         Cartera
                     </Link>
 
-                    {!user && (
+                    {user ? (
+
+                        // Con sesión iniciada: mostrar Perfil.
                         <Link
-                            to="/login"
+                            to="/perfil"
                             onClick={() => setIsOpen(false)}
-                            className={`sidebar__link ${location.pathname === "/login" ? "active" : ""
-                                }`}
-                        >
-                            Iniciar Sesión
-                        </Link>
-                    )}
-                    {/* <Link
-                        to="/register"
-                        onClick={() => setIsOpen(false)}
-                        className={`sidebar__link ${location.pathname === "/register" ? "active" : ""
+                            className={`sidebar__link ${
+                                location.pathname === "/perfil" ? "active" : ""
                             }`}
-                    >
-                        Registrarse
-                    </Link>*/}
+                        >
+                            Perfil
+                        </Link>
+
+                    ) : (
+
+                        // Sin sesión: mostrar Login y Registro.
+                        <>
+                            <Link
+                                to="/login"
+                                onClick={() => setIsOpen(false)}
+                                className={`sidebar__link ${
+                                    location.pathname === "/login" ? "active" : ""
+                                }`}
+                            >
+                                Iniciar Sesión
+                            </Link>
+
+                            <Link
+                                to="/register"
+                                onClick={() => setIsOpen(false)}
+                                className={`sidebar__link ${
+                                    location.pathname === "/register" ? "active" : ""
+                                }`}
+                            >
+                                Registrarse
+                            </Link>
+                        </>
+
+                    )}
+
                 </nav>
             </aside>
         </>
     );
-
 }

@@ -38,12 +38,22 @@ export function AuthProvider ({children}) {
         navigate("/login", { replace: true });
     };
 
+    // Cuando se edita el perfil (nombre, correo, teléfono) desde
+    // EditProfileModal, la fuente real (UsersContext) ya queda
+    // actualizada — esto solo refresca la copia de la sesión activa
+    // para que se refleje al instante en Header/Sidebar/Profile sin
+    // tener que cerrar sesión y volver a entrar.
+    const updateSessionUser = (updates) => {
+        setUser(prev => (prev ? { ...prev, ...updates } : prev));
+    };
+
     return (
         <AuthContext.Provider
         value={{
             user,
             login,
             logout,
+            updateSessionUser,
         }}
             >
             {children}

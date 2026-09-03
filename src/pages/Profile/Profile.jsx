@@ -14,6 +14,8 @@ import {
 
 import { useState } from "react";
 import EditProfileModal from "../../components/EditProfileModal/EditProfileModal";
+import ChangePasswordModal from "../../components/ChangePasswordModal/ChangePasswordModal";
+import MyOrdersModal from "../../components/MyOrdersModal/MyOrdersModal";
 
 export default function Profile() {
 
@@ -25,6 +27,8 @@ export default function Profile() {
   };
 
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [showOrdersModal, setShowOrdersModal] = useState(false);
 
 
   if (!user) {
@@ -112,13 +116,19 @@ export default function Profile() {
 
           </button>
 
-          <button className="profile__button">
+          <button
+            className="profile__button"
+            onClick={() => setShowPasswordModal(true)}
+          >
             <FaLock />
             Cambiar contraseña
 
           </button>
 
-          <button className="profile__button">
+          <button
+            className="profile__button"
+            onClick={() => setShowOrdersModal(true)}
+          >
             <FaClipboardList />
             Mis pedidos
 
@@ -144,6 +154,28 @@ export default function Profile() {
 
             onClose={() => setShowEditModal(false)}
 
+          />
+
+        )
+      }
+
+      {
+        showPasswordModal && (
+
+          <ChangePasswordModal
+            user={user}
+            onClose={() => setShowPasswordModal(false)}
+          />
+
+        )
+      }
+
+      {
+        showOrdersModal && (
+
+          <MyOrdersModal
+            user={user}
+            onClose={() => setShowOrdersModal(false)}
           />
 
         )
